@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Sale Assessment — PrimeAuctions v9</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #F5F2EC;
+  --bg-card:     #FFFFFF;
+  --bg-mid:      #EDE9E1;
+  --bg-input:    #FAF8F4;
+  --navy:        #0A0A0A;
+  --navy-mid:    #1C1C1C;
+  --gold:        #B8922E;
+  --gold-lt:     #C9A84C;
+  --gold-dim:    rgba(184,146,46,0.10);
+  --gold-border: rgba(184,146,46,0.30);
+  --off-white:   #0A0A0A;
+  --dim:         #1C1C1C;
+  --muted:       #555550;
+  --border:      rgba(10,10,10,0.14);
+  --red:   #C0392B; --red-dim:   rgba(192,57,43,0.08);
+  --amber: #B8720A; --amber-dim: rgba(184,114,10,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--off-white); font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-weight:400; min-height:100vh; }
+
+/* HEADER */
+header { display:flex; align-items:center; justify-content:space-between; padding:20px 48px; border-bottom:1px solid var(--gold-border); background:rgba(245,242,236,0.97); position:sticky; top:0; z-index:50; backdrop-filter:blur(10px); flex-wrap:wrap; gap:10px; }
+.logo-name { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:20px; font-weight:400; letter-spacing:.12em; color:var(--off-white); }
+.logo-tag  { font-family:'DM Mono','Courier New',Courier,monospace; font-size:8px; letter-spacing:.22em; color:var(--gold); margin-top:4px; text-transform:uppercase; }
+.hdr-divider { width:1px; height:30px; background:var(--gold-border); margin:0 20px; }
+.hdr-label { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--off-white); text-transform:uppercase; }
+.hdr-val   { font-family:'DM Mono','Courier New',Courier,monospace; font-size:9px; color:var(--gold); margin-top:4px; letter-spacing:.1em; }
+.hdr-agent-brand { display:none; align-items:center; gap:10px; margin-left:0; }
+.hdr-agent-brand.visible { display:flex; }
+.hdr-agent-divider { font-family:'DM Mono','Courier New',Courier,monospace; font-size:10px; color:var(--gold-border); }
+.hdr-agent-name { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:12px; font-weight:600; letter-spacing:.08em; color:var(--off-white); }
+.hdr-agent-logo { max-height:28px; max-width:80px; object-fit:contain; }
+
+/* WRAP */
+.wrap { max-width:1180px; margin:0 auto; padding:0 48px 80px; }
+
+/* INPUT BAR */
+.input-bar { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1.4fr 1.4fr; gap:16px; align-items:end; background:var(--bg-card); border:1px solid var(--gold-border); border-radius:4px; padding:24px 28px; margin-top:32px; }
+.field { display:flex; flex-direction:column; gap:7px; }
+.field label { font-family:'DM Mono','Courier New',Courier,monospace; font-size:11px; letter-spacing:.12em; color:#6B5A2A; text-transform:uppercase; font-weight:500; }
+.field input, .field select { background:var(--bg-input); border:1px solid rgba(10,10,10,0.2); border-radius:2px; color:#0A0A0A; font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; padding:8px 12px; outline:none; transition:border-color .2s; width:100%; -webkit-appearance:none; appearance:none; }
+.field input:focus, .field select:focus { border-color:var(--gold); }
+.field select option { background:var(--bg-card); color:#0A0A0A; }
+.run-btn { background:var(--gold); color:var(--navy); border:none; border-radius:2px; font-family:'DM Mono','Courier New',Courier,monospace; font-size:9px; font-weight:500; letter-spacing:.18em; padding:10px 22px; cursor:pointer; text-transform:uppercase; transition:background .18s,transform .1s; white-space:nowrap; height:38px; }
+.run-btn:hover { background:var(--gold-lt); }
+
+
+/* STATUS BAR */
+.status-bar { display:flex; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:4px; padding:14px 24px; margin-top:12px; overflow-x:auto; }
+.sb-item { display:flex; flex-direction:column; gap:4px; padding:0 20px; }
+.sb-item:first-child { padding-left:0; }
+.sb-item:last-child  { padding-right:0; }
+.sb-key { font-family:'DM Mono','Courier New',Courier,monospace; font-size:7.5px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
+.sb-val { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; }
+.sb-div { width:1px; height:28px; background:var(--border); flex-shrink:0; }
+
+/* SECTION HEADER */
+.sec-hdr { display:flex; align-items:baseline; gap:14px; margin:40px 0 18px; }
+.sec-ttl { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--navy); }
+.sec-line { flex:1; height:1px; background:var(--border); }
+
+/* METRIC CARDS */
+.metrics-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.mcard { background:var(--bg-card); border:1px solid var(--border); border-radius:4px; padding:32px 28px 26px; position:relative; overflow:hidden; }
+.mcard::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.mcard.red::after   { background:var(--red); }
+.mcard.amber::after { background:var(--amber); }
+.mcard.teal::after  { background:#0EA5C4; }
+.m-label { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--navy); text-transform:uppercase; margin-bottom:16px; }
+.m-big   { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:88px; font-weight:300; line-height:1; transition:color .3s ease; }
+.m-unit  { font-size:22px; font-weight:300; color:var(--muted); margin-left:4px; }
+.mcard.red   .m-big { color:#C0392B; }
+.mcard.amber .m-big { color:#B8720A; }
+.mcard.teal  .m-big { color:#0284A8; }
+.m-desc  { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; color:var(--dim); line-height:1.65; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.m-bench { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:12px; font-weight:400; color:var(--muted); margin-top:10px; padding:8px 12px; background:var(--bg-mid); border-radius:2px; line-height:1.65; }
+
+/* ALERT */
+.alert { padding:13px 18px; border-radius:3px; font-size:13px; font-weight:400; line-height:1.65; margin-top:12px; display:none; }
+.alert.red   { background:rgba(192,57,43,0.08); border-left:2px solid var(--red); color:#7B1A12; }
+.alert.amber { background:rgba(184,114,10,0.08); border-left:2px solid var(--amber); color:#7A4A05; }
+
+/* POST-CROSSOVER FADE-IN */
+@keyframes pcFadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+#post-crossover-header[style*="block"], #post-crossover-metrics[style*="grid"] { animation: pcFadeIn 0.4s ease forwards; }
+
+/* VERDICT */
+.verdict-line { margin-top:16px; padding:22px 28px; background:var(--gold-dim); border-left:3px solid var(--gold); border-radius:0 4px 4px 0; }
+.verdict-text { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:400; font-style:italic; color:var(--navy); line-height:1.5; letter-spacing:.01em; }
+
+/* LOSS BLOCK */
+.loss-block { align-items:center; gap:32px; background:var(--bg-card); border:1px solid var(--gold-border); border-radius:4px; padding:28px 32px; margin-top:16px; }
+.loss-label { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--gold); text-transform:uppercase; margin-bottom:5px; }
+.loss-sub   { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:12px; color:var(--muted); }
+.loss-range { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:52px; font-weight:300; color:var(--gold); white-space:nowrap; flex-shrink:0; }
+.loss-note  { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; color:var(--dim); line-height:1.65; }
+
+/* CHART */
+.chart-box { background:#0A0A0A; border:1px solid rgba(201,168,76,0.2); border-radius:4px; padding:28px 32px; margin-bottom:12px; overflow:hidden; }
+.chart-hdr { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:10px; }
+.chart-ttl { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:17px; font-weight:400; letter-spacing:.02em; color:#FFFFFF; }
+.chart-sub { font-size:11px; font-weight:300; color:rgba(255,255,255,0.55); margin-top:4px; }
+.legend    { display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+.leg-item  { display:flex; align-items:center; gap:7px; font-family:'DM Mono','Courier New',Courier,monospace; font-size:8.5px; letter-spacing:.1em; color:rgba(255,255,255,0.7); }
+.leg-line  { width:22px; height:2px; border-radius:1px; flex-shrink:0; }
+canvas     { display:block; max-width:100%; }
+
+/* CROSSOVER */
+
+/* GAUGES */
+.gauge-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.gcard { background:var(--bg-card); border:1px solid var(--border); border-radius:4px; padding:24px 26px; }
+.g-label { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--navy); text-transform:uppercase; margin-bottom:16px; }
+.g-num   { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:72px; font-weight:300; line-height:1; }
+.g-unit  { font-size:16px; font-weight:300; color:var(--muted); margin-left:6px; }
+.g-track { height:5px; background:rgba(10,10,10,0.08); border-radius:3px; overflow:hidden; margin:10px 0 6px; }
+.g-fill  { height:100%; border-radius:3px; transition:width .6s ease; }
+.g-ticks { display:flex; justify-content:space-between; font-family:'DM Mono','Courier New',Courier,monospace; font-size:8px; color:var(--muted); }
+.g-note  { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; color:var(--dim); line-height:1.6; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+
+/* CONDITIONS */
+.conditions-bar { background:var(--bg-card); border:1px solid var(--border); border-radius:4px; padding:16px 28px; margin-top:10px; display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+.cond-label { font-family:'DM Mono','Courier New',Courier,monospace; font-size:11px; letter-spacing:.12em; color:#555550; text-transform:uppercase; flex-shrink:0; white-space:nowrap; font-weight:500; }
+.cond-fields { display:flex; gap:16px; flex-wrap:wrap; flex:1; }
+.cond-field { display:flex; flex-direction:column; gap:5px; flex:1; min-width:150px; }
+.cond-field label { font-family:'DM Mono','Courier New',Courier,monospace; font-size:11px; letter-spacing:.1em; color:#6B5A2A; text-transform:uppercase; font-weight:500; }
+.cond-field select, .cond-field input { background:var(--bg-input); border:1px solid rgba(10,10,10,0.2); border-radius:2px; color:#0A0A0A; font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; padding:8px 10px; outline:none; transition:border-color .2s; width:100%; -webkit-appearance:none; appearance:none; }
+.cond-field select:focus, .cond-field input:focus { border-color:var(--gold); }
+.cond-field select option { background:var(--bg-card); color:#0A0A0A; }
+.cond-divider { width:1px; height:40px; background:var(--border); flex-shrink:0; align-self:center; }
+.cond-realism-row { width:100%; padding:14px 28px 12px; background:rgba(201,168,76,0.06); border-bottom:1px solid var(--gold-border); display:flex; }
+.cond-realism-row .cond-field label { color:var(--gold) !important; }
+.cond-realism-row select { border-color:rgba(201,168,76,0.35) !important; max-width:400px; }
+
+/* CONTEXT BAR */
+.context-bar { display:flex; align-items:flex-start; gap:12px; background:var(--bg-mid); border:1px solid var(--border); border-radius:4px; padding:13px 20px; margin-top:10px; }
+.context-icon { color:var(--gold); font-size:12px; flex-shrink:0; margin-top:2px; }
+.context-text { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:14px; font-weight:400; color:var(--dim); line-height:1.6; }
+
+/* STRATEGY */
+.strategy-block { background:var(--bg-card); border:1px solid var(--gold-border); border-radius:4px; overflow:hidden; margin-bottom:14px; }
+.strategy-header { display:flex; align-items:center; justify-content:space-between; padding:20px 28px 18px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
+.strategy-state { display:flex; align-items:center; gap:14px; }
+.strategy-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.strategy-label { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--navy); }
+.strategy-tag { font-family:'DM Mono','Courier New',Courier,monospace; font-size:8px; letter-spacing:.22em; color:var(--muted); border:1px solid var(--border); padding:3px 10px; border-radius:2px; text-transform:uppercase; }
+.strategy-body { padding:24px 28px; }
+.strategy-signal { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:24px; font-weight:400; line-height:1.5; color:var(--navy); margin-bottom:16px; }
+.strategy-detail { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; font-weight:400; color:var(--dim); line-height:1.7; padding-top:16px; border-top:1px solid var(--border); }
+.strategy-spectrum { display:flex; align-items:center; gap:0; margin-top:20px; border-radius:3px; overflow:hidden; }
+.spec-step { flex:1; padding:8px 6px; text-align:center; font-family:'DM Mono','Courier New',Courier,monospace; font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); background:var(--bg-mid); border-right:1px solid var(--border); transition:all .3s; }
+.spec-step:last-child { border-right:none; }
+.spec-step.active { color:#FFFFFF; font-weight:700; }
+
+/* METHOD DISCLOSURE */
+.method-disclosure { margin-top:32px; border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+.method-toggle { width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:var(--bg-mid); border:none; cursor:pointer; text-align:left; transition:background .2s; }
+.method-toggle:hover { background:var(--bg-card); }
+.method-toggle-label { font-family:'DM Mono','Courier New',Courier,monospace; font-size:8.5px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
+.method-toggle-icon { font-family:'DM Mono','Courier New',Courier,monospace; font-size:14px; color:var(--gold); line-height:1; transition:transform .2s; }
+.method-body { padding:24px 28px; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; gap:24px; background:var(--bg-card); }
+.method-section { display:flex; flex-direction:column; gap:8px; }
+.method-heading { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); }
+.method-text { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; color:var(--muted); line-height:1.75; }
+.method-text strong { color:var(--dim); font-weight:500; }
+
+/* AGENT PANEL */
+.agent-panel { background:rgba(201,168,76,0.06); border:1px solid var(--gold-border); border-radius:4px; overflow:hidden; margin-top:0; }
+.agent-panel-toggle { width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:transparent; border:none; cursor:pointer; text-align:left; }
+.agent-panel-label { font-family:'DM Mono','Courier New',Courier,monospace; font-size:9px; letter-spacing:.18em; color:var(--gold); text-transform:uppercase; }
+.agent-panel-sub { font-family:'Outfit',sans-serif; font-size:12px; color:var(--muted); margin-left:8px; }
+.agent-panel-icon { font-family:'DM Mono',monospace; font-size:14px; color:var(--gold); }
+.agent-panel-body { padding:16px 20px; border-top:1px solid var(--gold-border); display:none; grid-template-columns:1fr 1fr 1fr auto; gap:16px; align-items:end; }
+.agent-field { display:flex; flex-direction:column; gap:6px; }
+.agent-field label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.12em; color:#6B5A2A; text-transform:uppercase; }
+.agent-field input { background:var(--bg-input); border:1px solid rgba(10,10,10,0.15); border-radius:2px; color:#0A0A0A; font-family:'Outfit',sans-serif; font-size:13px; padding:9px 12px; outline:none; width:100%; }
+.agent-logo-wrap { display:flex; flex-direction:column; gap:6px; }
+.agent-logo-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.12em; color:#6B5A2A; text-transform:uppercase; }
+.agent-logo-preview { width:100%; min-width:130px; height:40px; border:1px dashed var(--gold-border); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; background:var(--bg-input); }
+.agent-logo-placeholder { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:.1em; pointer-events:none; }
+.agent-logo-preview input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+
+/* EXPLAINER */
+.explainer-grid { display:flex; flex-direction:column; gap:0; }
+.exp-step { display:flex; gap:18px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--border); }
+.exp-step:last-child { border-bottom:none; }
+.exp-step-highlight { background:var(--gold-dim); margin:0 -8px; padding:14px 8px; border-radius:3px; border-bottom:none !important; }
+.exp-num { font-family:'DM Mono','Courier New',Courier,monospace; font-size:18px; font-weight:500; color:var(--border); line-height:1; flex-shrink:0; width:28px; margin-top:2px; }
+.exp-num-gold { color:var(--gold); }
+.exp-content { flex:1; }
+.exp-title { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--navy); text-transform:uppercase; margin-bottom:5px; }
+.exp-text { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:13px; color:var(--dim); line-height:1.65; }
+.exp-text strong { color:var(--navy); font-weight:600; }
+.exp-arrow { font-family:'DM Mono',monospace; font-size:14px; color:var(--gold-border); text-align:center; padding:2px 0; margin-left:10px; }
+.exp-calc-grid { display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr; gap:8px; align-items:start; }
+.exp-calc-step { display:flex; gap:10px; align-items:flex-start; }
+.exp-calc-num { font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:var(--gold); line-height:1; flex-shrink:0; }
+.exp-calc-label { font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:4px; }
+.exp-calc-text { font-family:'Outfit',sans-serif; font-size:12px; color:var(--muted); line-height:1.55; }
+.exp-calc-arrow { font-family:'DM Mono',monospace; font-size:13px; color:var(--gold-border); align-self:center; padding:0 4px; }
+@media(max-width:860px){ .exp-calc-grid { grid-template-columns:1fr; } .exp-calc-arrow { display:none; } }
+.footer { margin-top:44px; padding-top:20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; }
+.foot-src { font-family:'DM Mono','Courier New',Courier,monospace; font-size:8.5px; letter-spacing:.08em; color:var(--muted); line-height:1.85; max-width:680px; }
+.foot-src span { color:var(--gold); }
+.foot-src em { font-style:italic; color:var(--muted); }
+.conf-badge { font-family:'DM Mono','Courier New',Courier,monospace; font-size:8px; letter-spacing:.18em; color:var(--muted); border:1px solid var(--border); padding:5px 10px; border-radius:2px; text-transform:uppercase; flex-shrink:0; }
+.footer-attribution { width:100%; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.footer-pa-mark { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:10px; font-weight:400; letter-spacing:.16em; color:var(--muted); }
+.footer-pa-tag { font-family:'DM Mono','Courier New',Courier,monospace; font-size:7.5px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
+.pdf-btn { display:flex; align-items:center; gap:8px; background:transparent; border:1px solid var(--border); border-radius:2px; font-family:'DM Mono','Courier New',Courier,monospace; font-size:8.5px; letter-spacing:.18em; color:var(--muted); padding:8px 18px; cursor:pointer; text-transform:uppercase; margin-top:16px; transition:border-color .2s,color .2s; }
+.pdf-btn:hover { border-color:var(--gold); color:var(--gold); }
+.pdf-btn-icon { font-size:12px; }
+
+/* LANG TOGGLE */
+.lang-toggle { display:flex; align-items:center; gap:0; border:1px solid var(--gold-border); border-radius:2px; overflow:hidden; flex-shrink:0; }
+.lang-btn { background:transparent; border:none; font-family:'DM Mono','Courier New',Courier,monospace; font-size:9px; font-weight:500; letter-spacing:.16em; color:var(--muted); padding:6px 12px; cursor:pointer; text-transform:uppercase; transition:background .15s,color .15s; }
+.lang-btn.active { background:var(--gold); color:var(--navy); }
+.lang-btn:not(.active):hover { color:var(--gold); }
+
+/* PRINT COVER */
+.print-cover { display:none; padding:48px 0 40px; border-bottom:2px solid var(--gold-border); margin-bottom:40px; }
+.print-cover-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; }
+.print-cover-logos { display:flex; align-items:center; gap:20px; }
+.print-cover-divider { width:1px; height:36px; background:var(--gold-border); }
+.print-cover-pa-name { font-family:'Montserrat','Helvetica Neue',Arial,sans-serif; font-size:18px; font-weight:400; letter-spacing:.14em; color:var(--off-white); }
+.print-cover-pa-tag { font-family:'DM Mono','Courier New',Courier,monospace; font-size:7px; letter-spacing:.22em; color:var(--gold); text-transform:uppercase; margin-top:3px; }
+.print-cover-agent-logo { max-height:40px; max-width:120px; object-fit:contain; }
+.print-cover-date { font-family:'DM Mono','Courier New',Courier,monospace; font-size:9px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; }
+.print-cover-title { font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:32px; font-weight:300; color:var(--off-white); margin-bottom:8px; }
+.print-cover-subtitle { font-family:'DM Mono','Courier New',Courier,monospace; font-size:9px; letter-spacing:.14em; color:var(--gold); text-transform:uppercase; margin-bottom:32px; }
+.print-cover-meta { display:grid; grid-template-columns:1fr 1fr; gap:24px; padding:24px 0; border-top:1px solid var(--border); }
+.print-meta-block { display:flex; flex-direction:column; gap:6px; }
+.print-meta-key { font-family:'DM Mono','Courier New',Courier,monospace; font-size:7.5px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
+.print-meta-val { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:14px; font-weight:400; color:var(--off-white); }
+.print-cover-disclaimer { font-family:'Outfit','Helvetica Neue',Arial,sans-serif; font-size:11px; color:var(--muted); line-height:1.75; margin-top:24px; padding-top:16px; border-top:1px solid var(--border); }
+
+@media print {
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  body { background:#F5F2EC !important; }
+  header { position:static !important; backdrop-filter:none !important; page-break-after:avoid; padding:20px 32px !important; flex-wrap:nowrap !important; background:#F5F2EC !important; }
+  .agent-panel,.conditions-bar,.context-bar,.method-disclosure,.pdf-btn,.status-bar,.footer-attribution { display:none !important; }
+  .input-bar { display:none !important; }
+  .archetype-badge { display:none !important; }
+  .chart-box { page-break-inside:avoid; }
+  .metrics-grid { page-break-inside:avoid; grid-template-columns:repeat(2,1fr) !important; }
+  .post-crossover-grid { grid-template-columns:repeat(3,1fr) !important; }
+  .strategy-block { page-break-inside:avoid; }
+  .loss-block { page-break-inside:avoid; }
+  .gauge-row { grid-template-columns:1fr 1fr !important; }
+  .footer { page-break-before:avoid; margin-top:24px; }
+  .wrap { padding:0 32px 40px; }
+  canvas { max-width:100% !important; }
+  .print-cover { display:block !important; }
+}
+
+@media(max-width:860px){
+  header { padding:14px 20px; }
+  .hdr-divider { display:none; }
+  .hdr-agent-brand { display:none !important; }
+  .wrap { padding:0 16px 60px; }
+  .input-bar { grid-template-columns:1fr 1fr; padding:16px; gap:12px; margin-top:16px; }
+  .input-bar .field:first-child { grid-column:1/-1; }
+  .conditions-bar { padding:12px 16px; gap:10px; flex-wrap:wrap; }
+  .cond-realism-row { padding:12px 16px 10px; }
+  .cond-realism-row select { max-width:100%; }
+  .cond-divider { width:100%; height:1px; align-self:auto; margin:4px 0; }
+  .cond-fields { gap:10px; }
+  .metrics-grid { grid-template-columns:1fr; }
+  .m-big { font-size:72px; }
+  .gauge-row { grid-template-columns:1fr; }
+  .g-num { font-size:56px; }
+  .loss-block { flex-direction:column !important; gap:16px; padding:20px; }
+  .loss-range { font-size:38px; text-align:center; width:100%; }
+  .strategy-spectrum { flex-direction:column; }
+  .spec-step { border-right:none; border-bottom:1px solid rgba(255,255,255,0.06); padding:10px 12px; text-align:left; }
+  .spec-step:last-child { border-bottom:none; }
+  .post-crossover-grid { grid-template-columns:1fr; }
+  .method-body { grid-template-columns:1fr; }
+  .agent-panel-body { grid-template-columns:1fr 1fr; }
+  /* post-crossover merged block: stack the two numbers vertically on tablet */
+  #post-crossover-metrics .mcard > div:nth-child(2) { flex-wrap:wrap; gap:8px; }
+  .archetype-badge { font-size:11px; }
+}
+
+@media(max-width:480px){
+  header { padding:12px 16px; flex-wrap:wrap; }
+  .logo-name { font-size:16px; }
+  .logo-tag { display:none; }
+  .input-bar { grid-template-columns:1fr !important; padding:14px; gap:14px; }
+  .field input, .field select { font-size:16px !important; padding:12px 14px; }
+  .cond-realism-row select { max-width:100%; font-size:16px !important; }
+  .status-bar { padding:8px 14px; overflow-x:auto; flex-wrap:nowrap; }
+  .sb-div { display:none; }
+  .sb-item { padding:4px 10px; flex-shrink:0; }
+  .m-big { font-size:56px; }
+  .chart-box { padding:14px 12px; }
+  .chart-hdr { flex-direction:column; gap:8px; }
+    .footer { flex-direction:column; gap:10px; }
+  .pdf-btn { width:100%; justify-content:center; }
+  /* decayCost card: reduce font so ~26K€ fits cleanly */
+  #mcard3 .m-big { font-size:40px !important; }
+  /* post-crossover: stack numbers vertically, reduce sizes */
+  #post-crossover-metrics .mcard > div:nth-child(2) { flex-direction:column; gap:4px; }
+  #post-crossover-metrics .m-big { font-size:56px; }
+  /* archetype badge: compact on small screens */
+  .archetype-badge { font-size:11px; padding:8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo-name">PRIME<span>AUCTIONS</span></div>
+    <div class="logo-tag">The Swiss Standard for Global Property Auctions</div>
+  </div>
+  <div class="hdr-agent-brand" id="hdr-agent-brand">
+    <div class="hdr-agent-divider">×</div>
+    <img class="hdr-agent-logo" id="hdr-agent-logo" src="" alt="" style="display:none">
+    <div class="hdr-agent-name" id="hdr-agent-name-display"></div>
+  </div>
+  <div class="hdr-divider"></div>
+  <div>
+    <div class="hdr-label" data-i18n="hdr-framework">Cadre d'analyse stratégique</div>
+    <div class="hdr-val" id="hdr-date"></div>
+  </div>
+  <div style="margin-left:auto;">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lang-fr" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- PRINT-ONLY COVER PAGE -->
+  <div class="print-cover" id="print-cover">
+    <div class="print-cover-top">
+      <div class="print-cover-logos">
+        <div>
+          <div class="print-cover-pa-name">PRIME<span>AUCTIONS</span></div>
+          <div class="print-cover-pa-tag">The Swiss Standard for Global Property Auctions</div>
+        </div>
+        <div class="print-cover-divider" id="pc-divider" style="display:none"></div>
+        <img class="print-cover-agent-logo" id="pc-agent-logo" src="" alt="" style="display:none">
+      </div>
+      <div class="print-cover-date" id="pc-date"></div>
+    </div>
+    <div class="print-cover-title" data-i18n="pc-title">Cadre d'analyse stratégique de vente</div>
+    <div class="print-cover-subtitle" id="pc-subtitle" data-i18n="pc-subtitle-text">Confidentiel · À titre de discussion uniquement</div>
+    <div class="print-cover-meta">
+      <div class="print-meta-block"><div class="print-meta-key" data-i18n="pc-key-property">Bien</div><div class="print-meta-val" id="pc-property">—</div></div>
+      <div class="print-meta-block"><div class="print-meta-key" data-i18n="pc-key-price">Prix demandé</div><div class="print-meta-val" id="pc-price">—</div></div>
+      <div class="print-meta-block"><div class="print-meta-key" data-i18n="pc-key-preparedby">Préparé par</div><div class="print-meta-val" id="pc-agent">PrimeAuctions</div></div>
+      <div class="print-meta-block"><div class="print-meta-key" data-i18n="pc-key-contact">Contact</div><div class="print-meta-val" id="pc-contact">—</div></div>
+    </div>
+    <div class="print-cover-disclaimer" data-i18n="pc-disclaimer">Préparé par <span id="pc-agent-name-disc">PrimeAuctions</span> à l'aide du Cadre d'analyse stratégique de vente PrimeAuctions — un outil d'aide à la décision propriétaire développé par Primextate SA, Suisse. Ce document est strictement confidentiel. Il ne constitue pas une évaluation, une offre, un conseil en investissement ni une garantie de résultat. Toutes les projections sont fondées sur un modèle de comportement de marché et des recherches académiques publiées. Primextate SA n'accepte aucune responsabilité pour les décisions prises sur la base de ce document. Ce document est régi par le droit suisse.</div>
+  </div>
+
+  <!-- AGENT CO-BRANDING -->
+  <div class="agent-panel" id="agent-panel">
+    <button class="agent-panel-toggle" onclick="toggleAgentPanel()">
+      <div style="display:flex;align-items:center;gap:0">
+        <span class="agent-panel-label" data-i18n="agent-panel-title">Coordonnées de l'agent</span>
+        <span class="agent-panel-sub" data-i18n="agent-panel-sub">— personnalisez ce document pour votre client</span>
+      </div>
+      <span class="agent-panel-icon" id="agent-panel-icon">+</span>
+    </button>
+    <div class="agent-panel-body" id="agent-panel-body" style="display:none">
+      <div class="agent-field"><label for="a-name" data-i18n="agent-name-label">Votre nom</label><input id="a-name" type="text" placeholder="ex. Sophie Martin" oninput="updateAgentBrand()"></div>
+      <div class="agent-field"><label for="a-agency" data-i18n="agent-agency-label">Nom de l'agence</label><input id="a-agency" type="text" placeholder="ex. Riviera Prestige" oninput="updateAgentBrand()"></div>
+      <div class="agent-field"><label for="a-contact" data-i18n="agent-contact-label">Email ou téléphone</label><input id="a-contact" type="text" placeholder="ex. sophie@agence.com" oninput="updateAgentBrand()"></div>
+      <div class="agent-logo-wrap">
+        <div class="agent-logo-label" data-i18n="agent-logo-label">Logo de l'agence</div>
+        <div class="agent-logo-preview" id="agent-logo-preview">
+          <span class="agent-logo-placeholder" id="agent-logo-placeholder" data-i18n="agent-logo-placeholder">Cliquer pour télécharger</span>
+          <img id="agent-logo-img" src="" alt="" style="display:none;max-height:40px;max-width:140px;object-fit:contain;">
+          <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="input-bar">
+    <div class="field">
+      <label for="f-name" data-i18n="f-name-label">Votre bien</label>
+      <input id="f-name" type="text" value="" placeholder="ex. Villa — Sainte-Maxime, Var" oninput="runAnalysis()">
+    </div>
+    <div class="field">
+      <label for="f-price" data-i18n="f-price-label">Prix demandé (€M)</label>
+      <input id="f-price" type="number" value="6.9" min="1" max="100" step="0.1" oninput="runAnalysis()">
+    </div>
+    <div class="field">
+      <label for="f-orig" data-i18n="f-orig-label">Prix initial (€M) <span style="color:var(--muted);font-size:9px;" data-i18n="f-orig-hint">si réduit</span></label>
+      <input id="f-orig" type="number" min="1" max="100" step="0.1" placeholder="Si réduit" oninput="validateOrig(); runAnalysis()">
+      <span id="f-orig-error" style="font-family:'DM Mono',monospace;font-size:8px;color:#C0392B;margin-top:3px;display:none;" data-i18n="f-orig-error">Doit être supérieur au prix demandé</span>
+    </div>
+    <div class="field">
+      <label for="f-dom" data-i18n="f-dom-label">Jours en vente</label>
+      <input id="f-dom" type="number" value="0" min="0" max="1500" step="1" oninput="runAnalysis()">
+    </div>
+    <div class="field">
+      <label for="f-archetype" data-i18n="f-archetype-label">Profil de marché</label>
+      <select id="f-archetype" onchange="runAnalysis()">
+        <option value="perennial" data-i18n="arch-perennial">International Perennial</option>
+        <option value="seasonal" selected data-i18n="arch-seasonal">Seasonal Resort</option>
+        <option value="lifestyle" data-i18n="arch-lifestyle">Lifestyle / Secondary</option>
+        <option value="trophy" data-i18n="arch-trophy">Trophy / Exception</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-seg" data-i18n="f-seg-label">Type de bien</label>
+      <select id="f-seg" onchange="runAnalysis()">
+        <option value="villa-sea" data-i18n="seg-villa-sea">Villa avec vue mer / lac</option>
+        <option value="villa-inland" data-i18n="seg-villa-inland">Villa — sans vue</option>
+        <option value="chateau" data-i18n="seg-chateau">Château ou domaine</option>
+        <option value="apartment" data-i18n="seg-apartment">Appartement prestige</option>
+        <option value="penthouse" data-i18n="seg-penthouse">Penthouse</option>
+        <option value="chalet" data-i18n="seg-chalet">Chalet</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CONDITIONS BAR -->
+  <div class="conditions-bar" id="conditions-bar">
+    <div class="cond-realism-row">
+      <div class="cond-field" style="flex:1;">
+        <label data-i18n="c-realism-label">Comment le prix demandé se situe-t-il par rapport aux ventes récentes à proximité ?</label>
+        <select id="c-realism" onchange="runAnalysis()">
+          <option value="0" data-i18n="c-realism-0">En ligne avec les ventes comparables</option>
+          <option value="1" data-i18n="c-realism-1">Légèrement au-dessus — 5 à 15% de plus</option>
+          <option value="2" data-i18n="c-realism-2">Significativement au-dessus — plus de 15%</option>
+          <option value="-1" data-i18n="c-realism-m1">En dessous du marché — prix compétitif</option>
+        </select>
+        <span id="c-realism-note" style="font-family:'DM Mono',monospace;font-size:8px;margin-top:5px;display:none;line-height:1.5;"></span>
+      </div>
+    </div>
+    <div class="cond-label" data-i18n="cond-label-property">Votre bien</div>
+    <div class="cond-fields">
+      <div class="cond-field">
+        <label data-i18n="c-condition-label">État du bien</label>
+        <select id="c-condition" onchange="runAnalysis()">
+          <option value="1" data-i18n="c-cond-1">Excellent — prêt à habiter</option>
+          <option value="0" selected data-i18n="c-cond-0">Bon état général</option>
+          <option value="-1" data-i18n="c-cond-m1">Quelques travaux nécessaires</option>
+          <option value="-2" data-i18n="c-cond-m2">Rénovation complète nécessaire</option>
+        </select>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="c-enquiries-label">Visites — depuis la mise en vente <span style="color:var(--gold);font-size:9px;" data-i18n="c-real-figure">· votre chiffre</span></label>
+        <input id="c-enquiries-real" type="number" min="0" max="99" step="1" placeholder="ex. 8"
+          style="background:var(--bg-input);border:1px solid var(--gold-border);border-radius:2px;color:var(--navy);font-family:'Outfit',sans-serif;font-size:13px;padding:8px 12px;outline:none;width:100%;"
+          oninput="runAnalysis()">
+        <span id="c-enquiries-note" style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:4px;display:none;line-height:1.5;"></span>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="c-buyers-label">Offres reçues — depuis la mise en vente <span style="color:var(--gold);font-size:9px;" data-i18n="c-real-figure2">· votre chiffre</span></label>
+        <input id="c-buyers-pool" type="number" min="0" max="999" step="1" placeholder="ex. 2"
+          style="background:var(--bg-input);border:1px solid var(--gold-border);border-radius:2px;color:var(--navy);font-family:'Outfit',sans-serif;font-size:13px;padding:8px 12px;outline:none;width:100%;"
+          oninput="runAnalysis()">
+        <span id="c-buyers-note" style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:4px;display:none;line-height:1.5;"></span>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="c-price-label">Le prix a-t-il évolué ?</label>
+        <select id="c-price" onchange="runAnalysis()">
+          <option value="1" data-i18n="c-price-1">Non — toujours à ce prix</option>
+          <option value="0" selected data-i18n="c-price-0">C'est le prix initial</option>
+          <option value="-1" data-i18n="c-price-m1">Oui — réduit une fois</option>
+          <option value="-2" data-i18n="c-price-m2">Oui — réduit plusieurs fois</option>
+        </select>
+        <span id="c-price-note" style="font-family:'DM Mono',monospace;font-size:8px;color:var(--gold);margin-top:4px;display:none;"></span>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="c-agent-label">Activité commerciale sur le bien</label>
+        <select id="c-agent" onchange="runAnalysis()">
+          <option value="1" data-i18n="c-agent-1">Très actif — visites régulières</option>
+          <option value="0" selected data-i18n="c-agent-0">Niveau standard</option>
+          <option value="-1" data-i18n="c-agent-m1">Limité — peu de visites</option>
+        </select>
+      </div>
+    </div>
+    <div class="cond-divider"></div>
+    <div class="cond-label" data-i18n="cond-label-market">Le marché en ce moment</div>
+    <div class="cond-fields">
+      <div class="cond-field">
+        <label data-i18n="m-comparables-label">Biens comparables à proximité <span style="color:var(--gold);font-size:9px;" data-i18n="m-check-portal">— vérifier sur portail</span></label>
+        <input id="m-comparables" type="number" min="0" max="50" step="1" placeholder="ex. 4"
+          style="background:var(--bg-input);border:1px solid var(--gold-border);border-radius:2px;color:var(--navy);font-family:'Outfit',sans-serif;font-size:13px;padding:8px 12px;outline:none;width:100%;"
+          oninput="runAnalysis()">
+        <span id="m-comparables-note" style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:4px;display:none;line-height:1.5;"></span>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="m-date-label">Données vérifiées le <span style="color:var(--muted);font-size:9px;" data-i18n="m-date-hint">· apparaît sur le document</span></label>
+        <input id="m-checked-date" type="date"
+          style="background:var(--bg-input);border:1px solid rgba(10,10,10,0.12);border-radius:2px;color:var(--navy);font-family:'Outfit',sans-serif;font-size:13px;padding:8px 12px;outline:none;width:100%;"
+          oninput="runAnalysis()">
+      </div>
+      <div class="cond-field">
+        <label data-i18n="m-rates-label">Taux d'intérêt</label>
+        <select id="m-rates" onchange="runAnalysis()">
+          <option value="2" data-i18n="m-rates-2">En baisse — acheteurs plus confiants</option>
+          <option value="0" selected data-i18n="m-rates-0">Stables</option>
+          <option value="-2" data-i18n="m-rates-m2">En hausse — acheteurs plus prudents</option>
+        </select>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="m-velocity-label">Vitesse des transactions</label>
+        <select id="m-velocity" onchange="runAnalysis()">
+          <option value="2" data-i18n="m-vel-2">Rapide — biens vendus rapidement</option>
+          <option value="0" selected data-i18n="m-vel-0">Rythme normal</option>
+          <option value="-2" data-i18n="m-vel-m2">Lent — ventes qui traînent</option>
+        </select>
+      </div>
+      <div class="cond-field">
+        <label data-i18n="m-demand-label">Nombre d'acheteurs actifs</label>
+        <select id="m-demand" onchange="runAnalysis()">
+          <option value="1" data-i18n="m-dem-1">Fort — plus d'acheteurs que de biens</option>
+          <option value="0" selected data-i18n="m-dem-0">Modéré</option>
+          <option value="-1" data-i18n="m-dem-m1">Faible — peu d'acheteurs</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXT BAR -->
+  <div class="context-bar" id="context-bar">
+    <div class="context-icon">◈</div>
+    <div class="context-text" id="context-text" data-i18n="context-initial">Renseignez les informations du bien pour générer l'analyse de situation.</div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="sb-item"><div class="sb-key" data-i18n="sb-prop-key">Bien</div><div class="sb-val" id="sb-prop">—</div></div>
+    <div class="sb-div"></div>
+    <div class="sb-item"><div class="sb-key" data-i18n="sb-price-key">Prix demandé</div><div class="sb-val" id="sb-price">—</div></div>
+    <div class="sb-div"></div>
+    <div class="sb-item"><div class="sb-key" data-i18n="sb-dom-key">Jours en vente</div><div class="sb-val" id="sb-dom">—</div></div>
+    <div class="sb-div"></div>
+    <div class="sb-item"><div class="sb-key" data-i18n="sb-phase-key">Phase</div><div class="sb-val" id="sb-phase">—</div></div>
+    <div class="sb-div"></div>
+    <div class="sb-item"><div class="sb-key" data-i18n="sb-risk-key">Risque</div><div class="sb-val" id="sb-risk">—</div></div>
+    <div class="sb-div"></div>
+    <div class="sb-item"><div class="sb-key" data-i18n="sb-signal-key">Notre recommandation</div><div class="sb-val" id="sb-signal">—</div></div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="sec-hdr"><span class="sec-ttl" data-i18n="sec-recommendation">Notre recommandation</span><div class="sec-line"></div></div>
+  <div class="strategy-block" id="strat-block">
+    <div class="strategy-header">
+      <div class="strategy-state">
+        <div class="strategy-dot" id="strat-dot"></div>
+        <div class="strategy-label" id="strat-label">—</div>
+      </div>
+      <div class="strategy-tag" id="strat-tag">—</div>
+    </div>
+    <div class="strategy-body">
+      <div class="strategy-signal" id="strat-signal">—</div>
+      <div class="strategy-detail" id="strat-detail">—</div>
+
+    </div>
+  </div>
+
+  <!-- CHART SECTION -->
+  <div class="sec-hdr"><span class="sec-ttl" data-i18n="sec-cost">Deux trajectoires</span><div class="sec-line"></div></div>
+  <div class="chart-box">
+    <div class="chart-hdr">
+      <div>
+        <div class="chart-ttl" data-i18n="chart-title">Maintien en vente traditionnelle vs changement de stratégie — évolution du résultat dans le temps</div>
+        <div class="chart-sub" id="chart-sub">Indexed to asking price · indicative model</div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-line" style="background:#38BDF8"></div><span data-i18n="leg-traditional">Vente traditionnelle</span></div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--gold)"></div><span data-i18n="leg-auction">Vente aux enchères structurée</span></div>
+      </div>
+    </div>
+    <canvas id="chart"></canvas>
+    <div style="margin-top:10px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,0.35);line-height:1.65;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07);" data-i18n="chart-note">Sur les marchés peu liquides ou saisonniers, le délai de vente traditionnel peut dépasser largement un an. La zone ombrée indique où les deux courbes ont atteint leur plancher naturel.</div>
+    <div style="margin-top:12px;padding:12px 16px;background:var(--gold-dim);border-left:2px solid var(--gold-border);border-radius:0 3px 3px 0;">
+      <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;" data-i18n="chart-method-label">Note méthodologique</span>
+      <div style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--muted);line-height:1.7;margin-top:5px;" data-i18n="chart-method-text">Ce graphique reflète le comportement typique du marché pour ce profil de bien, calibré sur des recherches publiées. C'est un cadre d'aide à la décision, non une prévision. <span id="chart-date-note" style="color:var(--gold);"></span></div>
+    </div>
+  </div>
+
+  <div class="verdict-line" id="verdict-line" style="display:none">
+    <div class="verdict-text" id="verdict-text"></div>
+  </div>
+
+  <!-- loss-block removed v9 — absorbed into card 2 -->
+
+  <!-- v10: TWO HORIZONTAL BANDS replacing all cards and market conditions -->
+
+  <!-- BAND 1: 60-day cost — visible initiate/activate -->
+  <div id="cost-band" style="display:none;margin-top:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span id="cost-band-label-el" style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;">Coût estimé — 60 prochains jours en vente traditionnelle</span>
+      <div style="flex:1;height:1px;background:rgba(184,114,10,0.25);"></div>
+    </div>
+    <div class="loss-block" id="loss-block" style="display:flex;">
+      <div class="loss-left">
+        <div class="loss-label" id="cost-band-sublabel-el" data-i18n="loss-label">Coût estimé du maintien en vente traditionnelle — 2 prochains mois</div>
+        <div class="loss-sub" id="cost-band-sub-el" data-i18n="loss-sub">Réduction de prix typique observée sur des biens comparables restés en commercialisation standard</div>
+      </div>
+      <div class="loss-range" id="loss-range">—</div>
+      <div class="loss-right"><div class="loss-note" id="loss-note"></div></div>
+    </div>
+  </div>
+
+  <!-- BAND 2: mechanism advantage — visible activate only -->
+  <div id="post-crossover-header" style="display:none;margin-top:16px;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="xo-header-left-el" style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;">Avantage du changement de mécanisme — fenêtre actuelle</span>
+      <div style="flex:1;height:1px;background:var(--gold-border);"></div>
+      <span id="xo-header-right-el" style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;">Différentiel enchère vs. vente traditionnelle</span>
+    </div>
+  </div>
+  <div id="post-crossover-metrics" style="display:none;margin-top:0;">
+    <div class="loss-block" style="display:flex;align-items:center;background:var(--bg-card);border:1px solid var(--gold-border);">
+      <div class="loss-left">
+        <div class="loss-label" id="p1-label-el" style="color:var(--gold);">Avantage estimé d'une vente aux enchères structurée</div>
+        <div class="loss-sub" id="p2-label" style="color:var(--muted);">avantage sur le maintien en vente — estimé pour les 60 prochains jours</div>
+      </div>
+      <div class="loss-range" id="p1" style="color:var(--gold-lt);">—</div>
+      <div class="loss-right">
+        <div class="loss-note" id="p1-desc">—</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;" id="p1-bench">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METHOD DISCLOSURE -->
+  <div class="method-disclosure" id="method-disclosure">
+    <button class="method-toggle" onclick="toggleMethod()">
+      <span class="method-toggle-label" data-i18n="method-toggle-label">Comment ce cadre est construit — et ses limites</span>
+      <span class="method-toggle-icon" id="method-icon">+</span>
+    </button>
+    <div class="method-body" id="method-body" style="display:none">
+      <div class="method-section">
+        <div class="method-heading" data-i18n="method-h1">Quand il est le plus utile</div>
+        <div class="method-text" data-i18n="method-t1">Cet outil est conçu pour couvrir l'ensemble des délais de vente réalistes — y compris les marchés peu liquides et les conditions lentes. Le point de bascule et l'horizon du graphique s'ajustent automatiquement en fonction du profil de marché, du niveau de prix et des conditions renseignées.</div>
+      </div>
+      <div class="method-section">
+        <div class="method-heading" data-i18n="method-h2">Les 4 profils de marché</div>
+        <div class="method-text" data-i18n="method-t2"><strong>International Perennial :</strong> Demande toute l'année, acheteurs internationaux (ex. Cannes, Marbella, Lac Léman). Croisement typique : 12–16 mois. <strong>Seasonal Resort :</strong> Pic de 8–10 semaines, fenêtre effective courte (ex. Saint-Tropez, Megève, Val d'Isère). 16–24 mois. <strong>Lifestyle / Secondary :</strong> Demande mixte, acheteurs régionaux et internationaux (ex. Antibes, Chamonix, Mougins). 13–18 mois. <strong>Trophy / Exception :</strong> Vivier mondial restreint, processus entièrement off-market. 20–30 mois.</div>
+      </div>
+      <div class="method-section">
+        <div class="method-heading" data-i18n="method-h3">Ses limites</div>
+        <div class="method-text" data-i18n="method-t3">Dans les premières semaines, les chiffres reflètent le comportement typique du marché pour ce profil plutôt que votre situation spécifique. À l'autre extrême, si un bien est sur le marché depuis très longtemps, les signaux ont déjà joué et les résultats changent peu avec des données d'entrée différentes.</div>
+      </div>
+      <div class="method-section">
+        <div class="method-heading" data-i18n="method-h4">Ce que ce n'est pas</div>
+        <div class="method-text" data-i18n="method-t4">Ce n'est pas une évaluation et ce n'est pas une garantie. Il ne connaît pas tous les détails de votre bien ni son historique. Deux biens aux chiffres identiques peuvent avoir des résultats très différents selon la façon dont la vente est gérée.</div>
+      </div>
+      <div class="method-section">
+        <div class="method-heading" data-i18n="method-h5">Quand une enchère n'est pas la bonne réponse</div>
+        <div class="method-text" data-i18n="method-t5">Une vente aux enchères ne garantit pas une prime. Sur des marchés très étroits, une enchère peut exposer l'absence de demande plutôt que créer de la concurrence. Les conditions dans lesquelles une enchère surperforme — vivier suffisant, campagne internationale solide, réserve crédible, vendeur motivé — font partie de ce que PrimeAuctions évalue avant d'accepter un mandat.</div>
+      </div>
+      <div class="method-section">
+        <div class="method-heading" data-i18n="method-h6">Sur les recherches citées</div>
+        <div class="method-text" data-i18n="method-t6">Anglin, Rutherford &amp; Springer (2003) sur les effets du temps passé sur le marché ; Mayer (1998) sur les primes aux enchères — résultats mitigés selon les conditions ; Knight, Sirmans &amp; Turnbull (1994) sur la signalisation par le prix. Ce cadre n'affirme pas que les enchères surperforment toujours — il identifie le point où les coûts du maintien passif dépassent vraisemblablement ceux d'un processus structuré.</div>
+      </div>
+      <div class="method-section" style="grid-column:1/-1;margin-top:8px;padding-top:20px;border-top:1px solid var(--border);">
+        <div class="method-heading" style="color:var(--muted)" data-i18n="method-h7">Avertissement juridique</div>
+        <div class="method-text" style="color:var(--muted);line-height:1.8;" data-i18n="method-t7">Ce document a été produit à l'aide du Cadre d'analyse stratégique de vente PrimeAuctions, un outil d'aide à la décision propriétaire de Primextate SA, société incorporée en Suisse. Il est strictement confidentiel. Il ne constitue pas une évaluation, une expertise immobilière, une offre d'achat ou de vente, un conseil en investissement, un conseil juridique ou financier. Toutes les projections sont de nature probabiliste. Primextate SA n'accepte aucune responsabilité pour les décisions prises sur la base de ce document. Ce document est régi par le droit suisse. Tout litige est soumis à la compétence exclusive des tribunaux de Genève, Suisse.<br><br>PrimeAuctions est une marque de Primextate SA · Inscrite en Suisse · primextate.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS — VISUAL EXPLAINER -->
+  <div class="method-disclosure" id="explainer-disclosure" style="margin-top:12px;">
+    <button class="method-toggle" onclick="toggleExplainer()">
+      <span class="method-toggle-label" id="explainer-toggle-label">Comment ce cadre fonctionne — en 6 étapes</span>
+      <span class="method-toggle-icon" id="explainer-icon">+</span>
+    </button>
+    <div id="explainer-body" style="display:none;background:var(--bg-card);border-top:1px solid var(--border);padding:28px 28px 24px;">
+
+      <!-- Step flow -->
+      <div class="explainer-grid">
+
+        <div class="exp-step">
+          <div class="exp-num">01</div>
+          <div class="exp-content">
+            <div class="exp-title" id="exp-t1">On observe l'historique du bien</div>
+            <div class="exp-text" id="exp-d1">Jours en commercialisation, trajectoire de prix, visites, offres reçues, baisses de prix. Ce sont les signaux que le marché a déjà émis sur ce bien.</div>
+          </div>
+        </div>
+
+        <div class="exp-arrow">↓</div>
+
+        <div class="exp-step">
+          <div class="exp-num">02</div>
+          <div class="exp-content">
+            <div class="exp-title" id="exp-t2">On contextualise avec le marché actuel</div>
+            <div class="exp-text" id="exp-d2">Taux d'intérêt, vitesse des transactions, nombre d'acheteurs actifs, biens concurrents à proximité. Le même bien dans un marché lent et dans un marché actif n'a pas le même profil de risque.</div>
+          </div>
+        </div>
+
+        <div class="exp-arrow">↓</div>
+
+        <div class="exp-step exp-step-highlight">
+          <div class="exp-num exp-num-gold">03</div>
+          <div class="exp-content">
+            <div class="exp-title" id="exp-t3">On calcule le Jour J — le point de bascule</div>
+            <div class="exp-text" id="exp-d3">C'est le jour où le coût de l'attente dépasse le bénéfice de maintenir le prix. Il est calculé en 4 couches : base structurelle du segment → ajustements selon les signaux réels → plancher de protection (luxury floor) → correction de détresse si nécessaire.</div>
+          </div>
+        </div>
+
+        <div class="exp-arrow">↓</div>
+
+        <div class="exp-step">
+          <div class="exp-num">04</div>
+          <div class="exp-content">
+            <div class="exp-title" id="exp-t4">On compare votre situation au Jour J</div>
+            <div class="exp-text" id="exp-d4">Quatre phases : <strong>Maintain</strong> (fenêtre ouverte) → <strong>Prepare</strong> (fenêtre qui se réduit) → <strong>Initiate</strong> (point de bascule proche) → <strong>Activate</strong> (point de bascule dépassé). La phase détermine la recommandation.</div>
+          </div>
+        </div>
+
+        <div class="exp-arrow">↓</div>
+
+        <div class="exp-step">
+          <div class="exp-num">05</div>
+          <div class="exp-content">
+            <div class="exp-title" id="exp-t5">On vérifie les alertes spéciales</div>
+            <div class="exp-text" id="exp-d5">Prix significativement au-dessus du marché ? Beaucoup de visites sans offre ? Marché lent avec baisses répétées ? Ces signaux modifient le message — dans certains cas, le prix est la variable prioritaire avant le timing.</div>
+          </div>
+        </div>
+
+        <div class="exp-arrow">↓</div>
+
+        <div class="exp-step exp-step-highlight">
+          <div class="exp-num exp-num-gold">06</div>
+          <div class="exp-content">
+            <div class="exp-title" id="exp-t6">Ce que l'outil ne fait pas</div>
+            <div class="exp-text" id="exp-d6">Il ne positionne pas votre bien par rapport à des données de transactions externes. Il ne produit pas d'estimation de valeur. Il cartographie la relation entre l'historique du bien et les conditions actuelles — ce qui le rend indépendant des bases de données de marché et défendable sans accès aux données notariales.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- xoverDay calc mini-block -->
+      <div style="margin-top:24px;padding:20px 24px;background:var(--bg-mid);border-radius:4px;border-left:3px solid var(--gold-border);">
+        <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;" id="exp-calc-title">Comment le Jour J est calculé — 4 couches</div>
+        <div class="exp-calc-grid">
+          <div class="exp-calc-step">
+            <div class="exp-calc-num">1</div>
+            <div>
+              <div class="exp-calc-label" id="exp-c1-label">Base structurelle</div>
+              <div class="exp-calc-text" id="exp-c1-text">Segment du bien × niveau de prix × archétype de marché → durée de base en jours</div>
+            </div>
+          </div>
+          <div class="exp-calc-arrow">→</div>
+          <div class="exp-calc-step">
+            <div class="exp-calc-num">2</div>
+            <div>
+              <div class="exp-calc-label" id="exp-c2-label">Ajustements signaux</div>
+              <div class="exp-calc-text" id="exp-c2-text">Visites sans offres (jusqu'à −120j) · baisse de prix · conditions de marché · réalisme du prix</div>
+            </div>
+          </div>
+          <div class="exp-calc-arrow">→</div>
+          <div class="exp-calc-step">
+            <div class="exp-calc-num">3</div>
+            <div>
+              <div class="exp-calc-label" id="exp-c3-label">Plancher de protection</div>
+              <div class="exp-calc-text" id="exp-c3-text">Ultra ≥ 540j · Trophy ≥ 480j · Upper ≥ 365j · ajustable si signaux négatifs forts (−35% max)</div>
+            </div>
+          </div>
+          <div class="exp-calc-arrow">→</div>
+          <div class="exp-calc-step">
+            <div class="exp-calc-num">4</div>
+            <div>
+              <div class="exp-calc-label" id="exp-c4-label">Distress override</div>
+              <div class="exp-calc-text" id="exp-c4-text">Trophy/Ultra uniquement : si ≥2 signaux de détresse simultanés, le Jour J est ramené vers dom+45j</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="foot-src" id="foot-src"></div>
+    <div class="conf-badge" data-i18n="conf-badge">Strictement Confidentiel</div>
+  </div>
+  <div class="footer-attribution">
+    <div class="footer-pa-mark">PRIME<span>AUCTIONS</span> — <span data-i18n="footer-mark">Cadre d'analyse stratégique de vente</span></div>
+    <div class="footer-pa-tag">The Swiss Standard for Global Property Auctions · primextate.com</div>
+  </div>
+  <button class="pdf-btn" onclick="generatePDF()"><span class="pdf-btn-icon">⬇</span> <span data-i18n="pdf-btn">Enregistrer en PDF / Imprimer</span></button>
+
+</div><!-- /wrap -->
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// V7 — SMART FLOOR + STRETCH COHERENCE + DISTRESS OVERRIDE
+//
+// Changes from v6:
+//
+// A. DISTRESS OVERRIDE (trophy/ultra only)
+//    When ≥2 confirmed distress signals co-occur (extended DOM,
+//    zero engagement, price above market, slow market, price cut),
+//    xoverDay is blended toward dom+45, forcing stateId to reflect
+//    market reality rather than the structural floor.
+//    score=2 → 33% blend; score=3 → 67%; score≥4 → fully capped.
+//
+// B. SMART LUXURY FLOOR (v7 carry-forward from v7a)
+//    luxuryFloor yields up to 35% under strong confirmed negative
+//    signals (price cut ≥10% + visits/no-offers + slow market).
+//
+// C. STRETCH COHERENCE (v7 carry-forward from v7a)
+//    When realism=stretch, all urgency signals are overridden:
+//    signalLabel, alertLevel, verdictText, lossBlock → "price first".
+//
+// D. CARD3 / STATEID INVARIANTS
+//    decayCost is only permitted when stateId==='activate'.
+//    daysRemaining is only permitted when stateId!=='activate'.
+//    Hard-enforced after card3Mode derivation.
+//
+// E. PROB DIVERGENCE SIGNAL
+//    When prob is significantly below what stateId alone implies
+//    (prepare+prob<42, or maintain+prob<35), card2 description
+//    surfaces the gap explicitly. stateId is NOT changed.
+//
+// F. POST-CROSSOVER FADE-IN
+//    CSS animation prevents abrupt appearance of the post-xover block.
+//
+// Architecture: xoverDay remains the single source of truth.
+// stateId is derived purely from dom vs xoverDay.
+// ══════════════════════════════════════════════════════════════════
+
+// ── ARCHETYPE CONFIG ─────────────────────────────────────────────
+const ARCHETYPES = {
+  perennial: {
+    label:      'International Perennial',
+    xoverMult:  1.20,
+    liquidity:  0.88,
+    maxDays:    850,
+    get desc() { return T('arch_perennial_desc'); },
+    g1Note: (t) => ({ fr:{
+      entry:  'La demande est active sur ce profil de marché — internationale et relativement continue. Un processus structuré avec une date limite crée l\'urgence que le marché ouvert génère rarement spontanément.',
+      upper:  'Au-dessus de 7M€, le vivier se contracte même sur un marché perennial. La demande existe mais est épisodique — 6 à 12 mois entre les apparitions d\'acheteurs qualifiés est courant.',
+      trophy: 'À ce niveau de prix, le vivier mondial est restreint — typiquement 20 à 40 acheteurs qualifiés par trimestre sur l\'ensemble du marché. Une campagne internationale structurée est nécessaire pour les atteindre tous.',
+      ultra:  'Moins de 15 à 20 acheteurs actifs au niveau mondial. L\'exposition traditionnelle n\'apporte pratiquement aucune portée supplémentaire — un processus structuré auprès d\'acheteurs identifiés est la seule approche efficace.'
+    }, en:{
+      entry:  'Demand is active in this market profile — international and relatively continuous. A structured process with a fixed deadline creates the urgency that the open market rarely generates spontaneously.',
+      upper:  'Above €7M, the pool contracts even in a perennial market. Demand exists but is episodic — 6 to 12 months between qualified buyer appearances is common.',
+      trophy: 'At this price level, the global qualified buyer pool is restricted — typically 20 to 40 per quarter across the entire market. A structured international campaign is needed to reach them all.',
+      ultra:  'Fewer than 15–20 active buyers globally. Traditional exposure adds virtually no additional reach — a structured process targeting identified buyers is the only effective approach.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g1Num: (t) => ({ entry:62, upper:48, trophy:31, ultra:18 })[t],
+    g2Note: (t) => ({ fr:{
+      entry:  'La concurrence est présente — les acheteurs ont des alternatives. Un processus avec date limite retire cet avantage.',
+      upper:  'Offre limitée à ce niveau. Mais un vivier étroit signifie que les annonces se disputent la même poignée de prospects.',
+      trophy: 'Rareté réelle à ce niveau. Sans processus compétitif, un seul acheteur contrôle entièrement la négociation.',
+      ultra:  'Pratiquement aucun comparable. Seul un processus structuré peut convertir la rareté en tension concurrentielle.'
+    }, en:{
+      entry:  'Competition is present — buyers have alternatives. A deadline-driven process removes that advantage.',
+      upper:  'Limited supply at this level. But a thin pool means listings compete for the same handful of prospects.',
+      trophy: 'Real scarcity at this level. Without a competitive process, a single buyer entirely controls the negotiation.',
+      ultra:  'Virtually no comparables. Only a structured process can convert scarcity into competitive tension.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g2Num: (t) => ({ entry:7, upper:4, trophy:2, ultra:1 })[t],
+    get bench() { return (t, band, label) => (typeof currentLang!=='undefined'&&currentLang==='en')?`Indicators calibrated for the International Perennial profile, segment ${band} (${label}). Continuous-demand markets: shorter timelines but a more disciplined buyer pool.`:`Les indicateurs sont calibrés pour le profil International Perennial, segment ${band} (${label}). Marchés à demande continue : délais plus courts mais vivier plus discipliné.`; },
+    get winBench() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'Estimates based on typical absorption rates for this profile. Seasonal and macroeconomic factors may shift these thresholds.':'Estimations basées sur des taux d\'absorption typiques pour ce profil. Facteurs saisonniers et macroéconomiques peuvent faire varier ces seuils.'; },
+    get footSrc() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'<span>Academic basis:</span> Anglin, Rutherford & Springer (2003); Mayer (1998) — <em>mixed results depending on conditions</em>; Knight, Sirmans & Turnbull (1994). <span>Note:</span> This tool identifies timing risk. It does not predict auction outcomes. <span>Disclaimer:</span> Decision-support framework — not a valuation or forecast.':'<span>Fondements académiques :</span> Anglin, Rutherford & Springer (2003) ; Mayer (1998) — <em>résultats mitigés selon conditions</em> ; Knight, Sirmans & Turnbull (1994). <span>Note :</span> Cet outil identifie le risque de timing. Il ne prédit pas les résultats des enchères. <span>Avertissement :</span> Cadre d\'aide à la décision — non une évaluation ni une prévision.'; }
+  },
+  seasonal: {
+    label:      'Seasonal Resort',
+    xoverMult:  1.50,
+    liquidity:  0.72,
+    maxDays:    1000,
+    get desc() { return T('arch_seasonal_desc'); },
+    g1Note: (t) => ({ fr:{
+      entry:  'La demande existe mais est très saisonnière. En dehors des pics, les acheteurs attendent simplement la saison suivante. Un processus structuré crée l\'urgence qui fonctionne quelle que soit la saison.',
+      upper:  'Au-dessus de 7M€ sur ce type de marché, le vivier est principalement international — et sa fenêtre d\'activité est encore plus restreinte. 12 à 18 mois entre les manifestations d\'intérêt qualifié est courant.',
+      trophy: 'Les biens trophy sur marché saisonnier cumulent deux contraintes : vivier mondial restreint et fenêtre d\'activité courte. Un processus couvrant plusieurs saisons est la seule approche efficace.',
+      ultra:  'Ultra-premium sur marché saisonnier. Les acheteurs ne se manifestent pas sur les portails — un réseau structuré et une démarche ciblée sont indispensables.'
+    }, en:{
+      entry:  'Demand exists but is highly seasonal. Outside peak periods, buyers simply wait for the next season. A structured process creates urgency that works regardless of season.',
+      upper:  'Above €7M in this market type, the pool is primarily international — with an even narrower activity window. 12 to 18 months between qualified interest is common.',
+      trophy: 'Trophy properties in seasonal markets face two compounding constraints: restricted global pool and a short activity window. A process covering multiple seasons is the only effective approach.',
+      ultra:  'Ultra-premium in a seasonal market. Buyers do not appear on portals — a structured network and targeted outreach are essential.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g1Num: (t) => ({ entry:55, upper:40, trophy:25, ultra:14 })[t],
+    g2Note: (t) => ({ fr:{
+      entry:  'L\'offre est relativement resserrée — atout réel. Mais la saisonnalité donne aux acheteurs le levier d\'attendre. Une enchère retire cet avantage.',
+      upper:  'Peu de biens comparables — favorable. Sans catalyseur compétitif, une transaction peut stagner plusieurs saisons sans aboutir.',
+      trophy: 'Rareté forte à ce niveau. La saisonnalité amplifie l\'effet — chaque fenêtre manquée représente 8 à 12 mois perdus.',
+      ultra:  'Quasi-aucun comparable. Chaque transaction est unique. Un processus structuré est le seul moyen de révéler la vraie valeur.'
+    }, en:{
+      entry:  'Supply is relatively tight — a real advantage. But seasonality gives buyers the leverage to wait. An auction removes that advantage.',
+      upper:  'Few comparable properties — favourable. Without a competitive catalyst, a transaction can stall across multiple seasons.',
+      trophy: 'Strong scarcity at this level. Seasonality amplifies the effect — each missed window represents 8 to 12 months lost.',
+      ultra:  'Virtually no comparables. Each transaction is unique. A structured process is the only way to reveal true value.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g2Num: (t) => ({ entry:5, upper:3, trophy:2, ultra:1 })[t],
+    get bench() { return (t, band, label) => (typeof currentLang!=='undefined'&&currentLang==='en')?`Indicators calibrated for the Seasonal Resort profile, segment ${band} (${label}). Concentrated demand peak — the effective window is significantly shorter than in a perennial market.`:`Indicateurs calibrés pour le profil Seasonal Resort, segment ${band} (${label}). Pic de demande concentré — la fenêtre effective est significativement plus courte que sur un marché perennial.`; },
+    get winBench() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'Estimates reflect seasonal absorption patterns. Properties listed off-season face structurally longer timelines.':'Les estimations reflètent les schémas d\'absorption saisonniers. Les biens mis en vente hors saison font face à des délais structurellement plus longs.'; },
+    get footSrc() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'<span>Academic basis:</span> Anglin, Rutherford & Springer (2003); Mayer (1998) — <em>mixed results depending on conditions</em>; Knight, Sirmans & Turnbull (1994). <span>Note:</span> This tool identifies timing risk. It does not predict auction outcomes. <span>Disclaimer:</span> Decision-support framework — not a valuation or forecast.':'<span>Fondements académiques :</span> Anglin, Rutherford & Springer (2003) ; Mayer (1998) — <em>résultats mitigés selon conditions</em> ; Knight, Sirmans & Turnbull (1994). <span>Note :</span> Cet outil identifie le risque de timing. Il ne prédit pas les résultats des enchères. <span>Avertissement :</span> Cadre d\'aide à la décision — non une évaluation ni une prévision.'; }
+  },
+  lifestyle: {
+    label:      'Lifestyle / Secondary',
+    xoverMult:  1.35,
+    liquidity:  0.80,
+    maxDays:    920,
+    get desc() { return T('arch_lifestyle_desc'); },
+    g1Note: (t) => ({ fr:{
+      entry:  'La demande est mixte — acheteurs locaux, régionaux et internationaux. Plus diverse qu\'un marché resort, mais moins constante qu\'un perennial. Une date limite crée l\'urgence que le marché ne génère pas spontanément.',
+      upper:  'Au-dessus de 7M€, ce profil de marché dépend presque exclusivement d\'acheteurs internationaux. Le vivier est plus étroit et les cycles de décision plus longs.',
+      trophy: 'À ce niveau, la liquidité de ce type de marché est très limitée. Une campagne internationale est presque toujours indispensable pour atteindre les acheteurs qualifiés.',
+      ultra:  'Ultra-premium sur marché lifestyle. Chaque bien est quasi unique. Un processus structuré auprès d\'acheteurs identifiés est la seule approche réaliste.'
+    }, en:{
+      entry:  'Demand is mixed — local, regional and international buyers. More diverse than a resort market, but less consistent than a perennial. A deadline creates urgency the market does not generate spontaneously.',
+      upper:  'Above €7M, this market profile depends almost exclusively on international buyers. The pool is narrower and decision cycles are longer.',
+      trophy: 'At this level, liquidity in this market type is very limited. An international campaign is almost always essential to reach qualified buyers.',
+      ultra:  'Ultra-premium in a lifestyle market. Each property is near-unique. A structured process targeting identified buyers is the only realistic approach.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g1Num: (t) => ({ entry:58, upper:44, trophy:28, ultra:16 })[t],
+    g2Note: (t) => ({ fr:{
+      entry:  'Concurrence modérée. Les acheteurs ont des options — un processus avec date limite retire cet avantage et crée l\'urgence.',
+      upper:  'Offre limitée à ce niveau — favorable. Le vivier étroit signifie que ces annonces se disputent la même poignée de prospects sérieux.',
+      trophy: 'Peu de comparables directs. La rareté est un atout, mais sans processus compétitif un seul acheteur contrôle la négociation.',
+      ultra:  'Pratiquement aucun comparable. Un processus structuré est le seul moyen de créer une tension concurrentielle réelle.'
+    }, en:{
+      entry:  'Moderate competition. Buyers have options — a deadline-driven process removes that advantage and creates urgency.',
+      upper:  'Limited supply at this level — favourable. The thin pool means these listings compete for the same handful of serious prospects.',
+      trophy: 'Few direct comparables. Scarcity is an advantage, but without a competitive process a single buyer controls the negotiation.',
+      ultra:  'Virtually no comparables. A structured process is the only way to create real competitive tension.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g2Num: (t) => ({ entry:6, upper:3, trophy:2, ultra:1 })[t],
+    get bench() { return (t, band, label) => (typeof currentLang!=='undefined'&&currentLang==='en')?`Indicators calibrated for the Lifestyle / Secondary profile, segment ${band} (${label}). Mixed demand — more consistent than seasonal, less than perennial.`:`Indicateurs calibrés pour le profil Lifestyle / Secondary, segment ${band} (${label}). Demande mixte — plus constante que le saisonnier, moins que le perennial.`; },
+    get winBench() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'Estimates reflect typical absorption patterns for a secondary residential market. The international buyer base extends decision cycles.':'Les estimations reflètent les schémas d\'absorption d\'un marché résidentiel secondaire. La base d\'acheteurs internationale prolonge les cycles de décision.'; },
+    get footSrc() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'<span>Academic basis:</span> Anglin, Rutherford & Springer (2003); Mayer (1998) — <em>mixed results depending on conditions</em>; Knight, Sirmans & Turnbull (1994). <span>Note:</span> This tool identifies timing risk. It does not predict auction outcomes. <span>Disclaimer:</span> Decision-support framework — not a valuation or forecast.':'<span>Fondements académiques :</span> Anglin, Rutherford & Springer (2003) ; Mayer (1998) — <em>résultats mitigés selon conditions</em> ; Knight, Sirmans & Turnbull (1994). <span>Note :</span> Cet outil identifie le risque de timing. Il ne prédit pas les résultats des enchères. <span>Avertissement :</span> Cadre d\'aide à la décision — non une évaluation ni une prévision.'; }
+  },
+  trophy: {
+    label:      'Trophy / Exception',
+    xoverMult:  1.70,
+    liquidity:  0.60,
+    maxDays:    1100,
+    get desc() { return T('arch_trophy_desc'); },
+    g1Note: (t) => ({ fr:{
+      entry:  'Bien positionné au bas du segment trophy. La demande est structurellement plus restreinte — les acheteurs à ce niveau opèrent hors des canaux habituels.',
+      upper:  'Le vivier mondial est très restreint. Les cycles de décision de 18 à 24 mois sont normaux sur ce segment, non une anomalie.',
+      trophy: 'À ce niveau de prix, les acheteurs qualifiés actifs au niveau mondial se comptent en dizaines. Un processus structuré est le seul moyen de les atteindre simultanément.',
+      ultra:  'Moins de 15 acheteurs actifs au niveau mondial à tout moment. Chaque transaction est un événement unique. L\'exposition traditionnelle n\'apporte pratiquement aucun acheteur supplémentaire.'
+    }, en:{
+      entry:  'Property positioned at the lower end of the trophy segment. Demand is structurally more restricted — buyers at this level operate outside standard channels.',
+      upper:  'The global pool is very restricted. Decision cycles of 18 to 24 months are normal in this segment, not an anomaly.',
+      trophy: 'At this price level, active qualified buyers globally number in the dozens. A structured process is the only way to reach them simultaneously.',
+      ultra:  'Fewer than 15 active buyers globally at any given time. Each transaction is a unique event. Traditional exposure adds virtually no additional buyers.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g1Num: (t) => ({ entry:35, upper:24, trophy:16, ultra:10 })[t],
+    g2Note: (t) => ({ fr:{
+      entry:  'Peu de comparables — rareté réelle. Sans processus compétitif, un seul acheteur contrôle entièrement la négociation.',
+      upper:  'Quasi-aucun comparable direct à ce niveau. La rareté est votre atout principal — mais elle ne se convertit pas en prix sans compétition.',
+      trophy: 'Chaque bien est unique à ce niveau. La rareté est absolue. Un processus structuré est le seul moyen de créer une tension concurrentielle.',
+      ultra:  'Aucun comparable réel sur le marché ouvert. Chaque transaction est unique et nécessite un processus entièrement sur-mesure.'
+    }, en:{
+      entry:  'Few comparables — real scarcity. Without a competitive process, a single buyer entirely controls the negotiation.',
+      upper:  'Almost no direct comparables at this level. Scarcity is your primary asset — but it does not convert to price without competition.',
+      trophy: 'Each property is unique at this level. Scarcity is absolute. A structured process is the only way to create competitive tension.',
+      ultra:  'No real comparables on the open market. Each transaction is unique and requires a fully bespoke process.'
+    } })[(typeof currentLang!=='undefined'?currentLang:'fr')][t],
+    g2Num: (t) => ({ entry:2, upper:1, trophy:1, ultra:0 })[t],
+    get bench() { return (t, band, label) => (typeof currentLang!=='undefined'&&currentLang==='en')?`Indicators calibrated for the Trophy / Exception profile, segment ${band} (${label}). Restricted global pool — timelines of 20 to 30 months are the norm in this segment.`:`Indicateurs calibrés pour le profil Trophy / Exception, segment ${band} (${label}). Vivier mondial restreint — délais de 20 à 30 mois sont la norme sur ce segment.`; },
+    get winBench() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'Estimates reflect trophy segment absorption patterns. Long decision cycles are a structural feature — not a sign of weakness.':'Les estimations reflètent les schémas d\'absorption du segment trophy. Les cycles de décision longs sont une caractéristique structurelle — non un signe de faiblesse.'; },
+    get footSrc() { return (typeof currentLang!=='undefined'&&currentLang==='en')?'<span>Academic basis:</span> Anglin, Rutherford & Springer (2003); Mayer (1998) — <em>mixed results depending on conditions</em>; Knight, Sirmans & Turnbull (1994). <span>Note:</span> This tool identifies timing risk. It does not predict auction outcomes. <span>Disclaimer:</span> Decision-support framework — not a valuation or forecast.':'<span>Fondements académiques :</span> Anglin, Rutherford & Springer (2003) ; Mayer (1998) — <em>résultats mitigés selon conditions</em> ; Knight, Sirmans & Turnbull (1994). <span>Note :</span> Cet outil identifie le risque de timing. Il ne prédit pas les résultats des enchères. <span>Avertissement :</span> Cadre d\'aide à la décision — non une évaluation ni une prévision.'; }
+  }
+};
+
+function updateArchetypeBadge() {
+  const arch = getArchetype();
+  const badge = document.getElementById('archetype-badge');
+  if (badge) { badge.innerHTML = '<strong>' + arch.label + '</strong>' + arch.desc; badge.style.display = 'block'; }
+}
+
+function getArchetype() {
+  const key = document.getElementById('f-archetype')?.value || 'seasonal';
+  return { key, ...ARCHETYPES[key] };
+}
+
+
+// ── PRICE TIER ───────────────────────────────────────────────────
+function priceTier(p) {
+  if (p < 7)  return { id:'entry',  label:'€3–7M',    band:'Entry Prestige' };
+  if (p < 15) return { id:'upper',  label:'€7–15M',   band:'Upper Prestige' };
+  if (p < 25) return { id:'trophy', label:'€15–25M',  band:'Trophy' };
+  return             { id:'ultra',  label:'€25M+',    band:'Ultra-Prime' };
+}
+
+// ── SEGMENTS ─────────────────────────────────────────────────────
+const SEG = {
+  'villa-sea':    { fr:0.52, xover:270, base:84 },
+  'villa-inland': { fr:0.45, xover:240, base:79 },
+  'chateau':      { fr:0.38, xover:330, base:71 },
+  'apartment':    { fr:0.58, xover:210, base:81 },
+  'penthouse':    { fr:0.55, xover:240, base:82 },
+  'chalet':       { fr:0.48, xover:290, base:78 },
+};
+
+function getSeg(segKey) {
+  return SEG[segKey] || SEG['villa-sea'];
+}
+
+// Price multiplier — probability
+function pp(p) {
+  if (p < 7)  return 1.00;
+  if (p < 15) return 0.92;
+  if (p < 25) return 0.82;
+  return 0.72;
+}
+
+// Price multiplier — crossover timing
+function px(p) {
+  if (p < 7)  return 1.00;
+  if (p < 15) return 1.25;
+  if (p < 25) return 1.50;
+  return 1.75;
+}
+
+// ── NUMBER FORMATTING ─────────────────────────────────────────────
+function fmtLoss(valM) {
+  if (valM >= 1) return '−€' + valM.toFixed(1) + 'M';
+  return '−€' + Math.round(valM * 1000) + 'K';
+}
+function fmtLossRange(loM, hiM) { return fmtLoss(loM) + ' — ' + fmtLoss(hiM); }
+function fmtLossNote(loM, hiM) {
+  const lo = loM >= 1 ? '€'+loM.toFixed(1)+'M' : '€'+Math.round(loM*1000)+'K';
+  const hi = hiM >= 1 ? '€'+hiM.toFixed(1)+'M' : '€'+Math.round(hiM*1000)+'K';
+  return lo + '–' + hi;
+}
+
+// ── ORIG PRICE VALIDATION ─────────────────────────────────────────
+// Prix initial must be strictly greater than prix demandé
+function validateOrig() {
+  const origEl   = document.getElementById('f-orig');
+  const errEl    = document.getElementById('f-orig-error');
+  const current  = parseFloat(document.getElementById('f-price').value) || 0;
+  const original = parseFloat(origEl.value) || 0;
+  if (origEl.value !== '' && original > 0 && original <= current) {
+    origEl.style.borderColor = '#C0392B';
+    if (errEl) errEl.style.display = 'block';
+  } else {
+    origEl.style.borderColor = '';
+    if (errEl) errEl.style.display = 'none';
+  }
+}
+
+// ── REDUCTION PCT (from f-orig vs f-price — ONLY for % display, NOT for projections) ─
+function getReductionPct() {
+  const current  = parseFloat(document.getElementById('f-price').value) || 0;
+  const original = parseFloat(document.getElementById('f-orig').value)  || 0;
+  if (!original || !current || original <= current) return 0;
+  return (original - current) / original;
+}
+
+// ── PRICE REALISM ─────────────────────────────────────────────────
+function getPriceRealism() {
+  const val = parseInt(document.getElementById('c-realism')?.value) || 0;
+  switch(val) {
+    case -1: return { level:-1, probPenalty:  6, reEngagePenalty:  5, xoverShift: 10, label:T('rl_below'), colour:'#6EC89A', tag:'competitive' };
+    case  0: return { level: 0, probPenalty:  0, reEngagePenalty:  0, xoverShift:  0, label:T('rl_inline'), colour:'', tag:'inline' };
+    case  1: return { level: 1, probPenalty:-14, reEngagePenalty:-12, xoverShift:-15, label:T('rl_slight'), colour:'var(--amber)', tag:'above' };
+    case  2: return { level: 2, probPenalty:-28, reEngagePenalty:-22, xoverShift:-30, label:T('rl_stretch'), colour:'#F07070', tag:'stretch' };
+    default: return { level: 0, probPenalty: 0, reEngagePenalty: 0, xoverShift: 0, label:T('rl_inline'), colour:'', tag:'inline' };
+  }
+}
+
+// ── COMPARABLES ──────────────────────────────────────────────────
+function getComparables(price) {
+  const raw = document.getElementById('m-comparables')?.value;
+  if (raw === '' || raw === null || raw === undefined) return null;
+  const n = parseInt(raw);
+  if (isNaN(n) || n < 0) return null;
+  const t = priceTier(price);
+  const thresholds = { entry:{many:8,normal:4,few:1}, upper:{many:5,normal:3,few:1}, trophy:{many:3,normal:2,few:1}, ultra:{many:2,normal:1,few:0} };
+  const th = thresholds[t.id] || thresholds.entry;
+  let score, color, width, note;
+  if (n >= th.many) {
+    score=-2; color='#C0392B'; width=Math.min(95,50+n*5);
+    note=currentLang==='en'?n+' comparable properties nearby. Buyers have real alternatives — they can afford to wait. An auction removes that leverage.':n+' biens comparables à proximité. Les acheteurs ont de vraies alternatives — ils peuvent se permettre d\'attendre. Une enchère retire ce levier.';
+  } else if (n >= th.normal) {
+    score=-1; color='#B8720A'; width=Math.min(70,30+n*6);
+    note=currentLang==='en'?n+' comparable listings nearby. Moderate competition. A fixed deadline creates urgency the open market does not provide.':n+' annonces comparables à proximité. Concurrence modérée. Une date limite crée l\'urgence que le marché ouvert ne fournit pas.';
+  } else if (n >= th.few) {
+    score=0; color='#B8720A'; width=Math.max(15,n*12);
+    note=currentLang==='en'?n+(n===1?' comparable property':' comparable properties')+' nearby. Limited supply — a real asset. But a thin market means fewer natural price signals.':n+(n===1?' bien comparable':' biens comparables')+' à proximité. Offre limitée — atout réel. Mais un marché étroit signifie moins de signaux de prix naturels.';
+  } else {
+    score=1; color='#6EC89A'; width=8;
+    note=currentLang==='en'?'No comparable properties currently listed. Scarcity is your asset — but without a competitive process, a single buyer controls the negotiation.':'Aucun bien comparable actuellement en vente. La rareté est votre atout — mais sans processus compétitif, un seul acheteur contrôle la négociation.';
+  }
+  const noteEl = document.getElementById('m-comparables-note');
+  if (noteEl) { noteEl.style.display='block'; noteEl.textContent=note.split('.')[0]+'.'; }
+  return { count:n, score, color, width, note };
+}
+
+// ── CONDITIONS ADJUSTMENTS ────────────────────────────────────────
+function getConditionsAdj() {
+  const cond  = parseInt(document.getElementById('c-condition')?.value) || 0;
+  const agent = parseInt(document.getElementById('c-agent')?.value)     || 0;
+  const enquiriesEl  = document.getElementById('c-enquiries-real');
+  const enquiriesRaw = enquiriesEl ? enquiriesEl.value : '';
+  let enquiry = 0;
+  if (enquiriesRaw !== '' && !isNaN(parseInt(enquiriesRaw))) {
+    const n = parseInt(enquiriesRaw);
+    enquiry = n===0 ? -1 : n<=2 ? -0.5 : n<=5 ? 0 : n<=10 ? 1 : 2;
+    const g1src = document.getElementById('g1-source');
+    if (g1src) { g1src.textContent='· inclus'; g1src.style.color='var(--gold)'; }
+    const noteEl = document.getElementById('c-enquiries-note');
+    if (noteEl) {
+      noteEl.style.display='block';
+      noteEl.textContent = n===0 ? T('en_0') : n<=2 ? n+(n>1?T('en_visites'):T('en_visite'))+T('en_few_post') : n<=5 ? n+T('en_mod_post') : n<=10 ? n+T('en_good_post') : n+T('en_high_post');
+    }
+  } else {
+    const g1src = document.getElementById('g1-source');
+    if (g1src) { g1src.textContent='· estimé'; g1src.style.color='var(--muted)'; }
+    const noteEl = document.getElementById('c-enquiries-note');
+    if (noteEl) noteEl.style.display='none';
+  }
+  const reductionPct = getReductionPct();
+  let priceScore;
+  if (reductionPct > 0) {
+    if      (reductionPct < 0.05) priceScore = -0.5;
+    else if (reductionPct < 0.10) priceScore = -1.5;
+    else if (reductionPct < 0.15) priceScore = -2.5;
+    else                           priceScore = -4;
+    const note = document.getElementById('c-price-note');
+    if (note) { note.style.display='block'; note.textContent=T('price_cut_pre')+Math.round(reductionPct*100)+T('price_cut'); }
+    const sel = document.getElementById('c-price');
+    if (sel) sel.value = priceScore <= -2.5 ? '-2' : '-1';
+  } else {
+    priceScore = parseInt(document.getElementById('c-price').value) || 0;
+    const note = document.getElementById('c-price-note');
+    if (note) note.style.display='none';
+  }
+  const propTotal = cond + enquiry + priceScore + agent;
+  const rates    = parseInt(document.getElementById('m-rates')?.value)    || 0;
+  const velocity = parseInt(document.getElementById('m-velocity')?.value) || 0;
+  const demand   = parseInt(document.getElementById('m-demand')?.value)   || 0;
+  const price = parseFloat(document.getElementById('f-price').value) || 6.9;
+  const compData = getComparables(price);
+  const compScore = compData ? compData.score : 0;
+  const buyerPoolEl  = document.getElementById('c-buyers-pool');
+  const buyerPoolRaw = buyerPoolEl ? buyerPoolEl.value : '';
+  let buyerPoolScore = 0;
+  if (buyerPoolRaw !== '' && !isNaN(parseInt(buyerPoolRaw))) {
+    const bp = parseInt(buyerPoolRaw);
+    buyerPoolScore = bp===0 ? -2 : bp<=2 ? -1 : bp<=5 ? 0 : bp<=10 ? 1 : 2;
+  }
+  const mktTotal = rates + velocity + demand + compScore + buyerPoolScore;
+  const xoverShift = (propTotal * 5) + (mktTotal * 8) + (compScore * 6);
+  const baseShift  = (propTotal * 2) + (mktTotal * 3);
+  const decayMult  = 1 + (mktTotal * -0.06) + (compScore * -0.04);
+  return { xoverShift, baseShift, decayMult };
+}
+
+// ── CHART ─────────────────────────────────────────────────────────
+function drawChart(dom, xoverDay, arch, decayMult) {
+  decayMult = Math.max(0.5, Math.min(1.5, decayMult || 1));
+  const canvas = document.getElementById('chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const box = canvas.parentElement;
+  const boxStyle = window.getComputedStyle(box);
+  const boxInnerW = box.clientWidth - parseFloat(boxStyle.paddingLeft||0) - parseFloat(boxStyle.paddingRight||0);
+  const W = Math.max(240, boxInnerW);
+  const H = Math.min(260, Math.max(160, W * 0.27));
+  canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.scale(dpr, dpr);
+
+  // Chart window: show enough to see full decay to floor, but not so wide that decay is imperceptible
+  // Cap at xoverDay*3 so movement is always visible within the displayed width
+  const total = Math.min(Math.max(xoverDay * 2.2, dom + 300, 400), xoverDay * 3);
+  const PTS = 120;
+  const tArr=[], aArr=[], dArr=[];
+
+  const reductionPct = getReductionPct();
+  let tradStart = 97;
+  if      (reductionPct >= 0.15) tradStart = 86;
+  else if (reductionPct >= 0.10) tradStart = 89;
+  else if (reductionPct >= 0.05) tradStart = 92;
+  else if (reductionPct >  0)    tradStart = 94;
+
+  // V8 curves: v7 crossover logic restored + 50% hard floor + ±5% band
+  // Traditional starts higher, decays faster — auction starts slightly lower but decays much slower
+  // They cross at xoverDay — this crossover IS the visual message
+  const CHART_FLOOR   = 50;
+  const locFloorBase  = Math.round(66 + (arch.liquidity - 0.60) / (0.88 - 0.60) * 12);
+  const tradFloor     = Math.max(CHART_FLOOR, locFloorBase - Math.round((decayMult-1)*8));
+  const auctFloor     = Math.max(CHART_FLOOR, tradFloor + 4);
+  const tradDecay     = (tradStart - CHART_FLOOR) / (total * 0.80);
+  const tradAtX       = Math.max(CHART_FLOOR, tradStart - tradDecay * xoverDay);
+  const auctStart     = tradStart - 3;
+  const auctPreDecay  = xoverDay > 0 ? (auctStart - tradAtX) / xoverDay : 0;
+  const auctPostDecay = tradDecay * 0.25;
+  const BAND          = 5;
+
+  const bHiArr=[], bLoArr=[];
+  for (let i=0; i<=PTS; i++) {
+    const d = Math.round((total/PTS)*i);
+    dArr.push(d);
+    const t = Math.max(CHART_FLOOR, tradStart - tradDecay * d);
+    let aRaw = d <= xoverDay ? auctStart - auctPreDecay * d : tradAtX - auctPostDecay * (d - xoverDay);
+    const a = Math.max(CHART_FLOOR, Math.min(99, aRaw));
+    tArr.push(Math.round(t*10)/10);
+    aArr.push(Math.round(a*10)/10);
+    bHiArr.push(Math.min(99, a + BAND));
+    bLoArr.push(Math.max(CHART_FLOOR, a - BAND));
+  }
+
+  const PAD={t:22,r:18,b:34,l:40};
+  const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
+  const all=[...tArr,...aArr,...bHiArr,...bLoArr];
+  const minY=Math.min(48, Math.floor(Math.min(...all)/5)*5-2);
+  const maxY=Math.ceil(Math.max(...all)/5)*5;
+  const rY=maxY-minY||1;
+  const xp=i=>PAD.l+(i/PTS)*cW;
+  const yp=v=>PAD.t+(1-(v-minY)/rY)*cH;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
+  for (let v=minY; v<=maxY; v+=5) { ctx.beginPath(); ctx.moveTo(PAD.l,yp(v)); ctx.lineTo(PAD.l+cW,yp(v)); ctx.stroke(); }
+
+  // 50% floor line
+  ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(PAD.l,yp(50)); ctx.lineTo(PAD.l+cW,yp(50)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.font='7px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('50%',PAD.l+3,yp(50)-3);
+
+  // ±5% auction band — shaded area
+  ctx.beginPath();
+  ctx.moveTo(xp(0), yp(bHiArr[0]));
+  for (let i=1; i<=PTS; i++) ctx.lineTo(xp(i), yp(bHiArr[i]));
+  for (let i=PTS; i>=0; i--) ctx.lineTo(xp(i), yp(bLoArr[i]));
+  ctx.closePath();
+  ctx.fillStyle='rgba(201,168,76,0.13)';
+  ctx.fill();
+
+  // Band boundary lines (dashed, subtle)
+  ctx.strokeStyle='rgba(201,168,76,0.30)'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+  ctx.beginPath();
+  for (let i=0; i<=PTS; i++) i ? ctx.lineTo(xp(i),yp(bHiArr[i])) : ctx.moveTo(xp(i),yp(bHiArr[i]));
+  ctx.stroke();
+  ctx.beginPath();
+  for (let i=0; i<=PTS; i++) i ? ctx.lineTo(xp(i),yp(bLoArr[i])) : ctx.moveTo(xp(i),yp(bLoArr[i]));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Tipping point band (±15%)
+  const xoverLo=Math.round(xoverDay*0.85), xoverHi=Math.round(xoverDay*1.15);
+  const xiLo=dArr.findIndex(d=>d>=xoverLo), xiHi=dArr.findIndex(d=>d>=xoverHi);
+  if (xiLo>0 && xiHi>0 && xiHi<PTS) {
+    ctx.fillStyle='rgba(201,168,76,0.08)';
+    ctx.fillRect(xp(xiLo),PAD.t,xp(xiHi)-xp(xiLo),cH);
+    const xi=dArr.findIndex(d=>d>=xoverDay);
+    if (xi>0) {
+      const cx=xp(xi);
+      ctx.strokeStyle='rgba(201,168,76,0.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(cx,PAD.t); ctx.lineTo(cx,PAD.t+cH); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.font='7px DM Mono,monospace'; ctx.fillStyle='rgba(201,168,76,0.75)';
+    const lbl=W<400?Math.round(xoverLo/30.4)+'–'+Math.round(xoverHi/30.4)+T('chart_mois'):T('chart_tipping')+Math.round(xoverLo/30.4)+'–'+Math.round(xoverHi/30.4)+T('chart_mois');
+    const hw=ctx.measureText(lbl).width/2;
+    const bandCx=(xp(xiLo)+xp(xiHi))/2;
+    const lblX=Math.min(Math.max(bandCx,PAD.l+hw+2),PAD.l+cW-hw-2);
+    ctx.textAlign='center'; ctx.fillText(lbl,lblX,PAD.t-5);
+  }
+
+  // YOU ARE HERE marker
+  if (dom>0) {
+    const ni=dArr.findIndex(d=>d>=dom);
+    if (ni>0) {
+      ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1.5; ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(xp(ni),PAD.t); ctx.lineTo(xp(ni),PAD.t+cH); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.font='bold 7.5px DM Mono,monospace'; ctx.textAlign='center';
+      const youLabel=T('chart_now');
+      const youLabelW=ctx.measureText(youLabel).width;
+      const youX=Math.min(Math.max(xp(ni),PAD.l+youLabelW/2+2),PAD.l+cW-youLabelW/2-2);
+      const youY=PAD.t+20;
+      ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.fillRect(youX-youLabelW/2-4,youY-11,youLabelW+8,14);
+      ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.fillText(youLabel,youX,youY);
+      const tNow=tArr[ni], aNow=aArr[ni];
+      if (aNow>tNow+0.5) {
+        const gapPx=yp(tNow)-yp(aNow);
+        if (gapPx>12) {
+          const gx=xp(ni)+18;
+          ctx.strokeStyle='rgba(201,168,76,0.6)'; ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(gx,yp(aNow)); ctx.lineTo(gx,yp(tNow)); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(gx-4,yp(aNow)); ctx.lineTo(gx+4,yp(aNow)); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(gx-4,yp(tNow)); ctx.lineTo(gx+4,yp(tNow)); ctx.stroke();
+          const gapPct=Math.round((aNow-tNow)*10)/10;
+          const gapLo=Math.max(1,Math.round(gapPct-5));
+          const gapHi=Math.round(gapPct+5);
+          ctx.fillStyle='rgba(201,168,76,0.9)'; ctx.font='7px DM Mono,monospace'; ctx.textAlign='left';
+          ctx.fillText('+'+gapLo+'–'+gapHi+'%',gx+6,yp((aNow+tNow)/2)+3);
+        }
+      }
+    }
+  }
+
+  // Note: crossover fill removed — replaced by ±5% band drawn above
+
+  const validLimit=xoverDay*2;
+  const vi=dArr.findIndex(d=>d>=validLimit);
+  // Removed dark overlay — it was hiding the curve decay in the right portion of the chart
+
+  ctx.lineWidth=2; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.strokeStyle='#38BDF8';
+  for (let i=0;i<=PTS;i++) i?ctx.lineTo(xp(i),yp(tArr[i])):ctx.moveTo(xp(i),yp(tArr[i]));
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle='#C9A84C';
+  for (let i=0;i<=PTS;i++) i?ctx.lineTo(xp(i),yp(aArr[i])):ctx.moveTo(xp(i),yp(aArr[i]));
+  ctx.stroke();
+
+  ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.font='8px DM Mono,monospace'; ctx.textAlign='right';
+  for (let v=minY;v<=maxY;v+=10) ctx.fillText(v+'%',PAD.l-4,yp(v)+3);
+  ctx.textAlign='center';
+  const st=Math.ceil(PTS/6);
+  for (let i=0;i<=PTS;i+=st) { const months=Math.round(dArr[i]/30.4); ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fillText(months>0?months+T('chart_mois'):T('chart_j0'),xp(i),PAD.t+cH+13); }
+  ctx.save(); ctx.translate(10,PAD.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font='7px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText(T('chart_pct'),0,0); ctx.restore();
+}
+
+// ── DYNAMIC COPY (bilingual) ──────────────────────────────────────
+const DYNAMIC_COPY = {
+  fr: {
+    phase_new:'Nouvelle mise en vente',phase_maintain:'Bonne fenêtre',phase_prepare:'Fenêtre qui se réduit',phase_initiate:'Urgence croissante',phase_activate:'Point de bascule dépassé',
+    risk_low:'Risque faible',risk_moderate:'Risque modéré',risk_growing:'Risque croissant',risk_high:'Risque élevé',
+    signal_stretch:'Prix à revoir — avant le timing',signal_monitor:'Observation',signal_consider:'Envisager d\'agir',signal_time:'Il est temps d\'agir',signal_act:'Agir maintenant',
+    mkt_very_slow:'La hausse des taux, un marché lent et peu d\'acheteurs signifient que les acheteurs n\'ont aucune urgence.',mkt_slow:'Le marché ralentit. Moins d\'acheteurs actifs, des transactions plus longues.',mkt_slightly_slow:'Le marché est un peu calme. Moins d\'acheteurs qu\'à l\'habitude.',mkt_normal:'Les conditions de marché sont globalement normales pour ce type de bien.',mkt_good:'Le marché est en bonne forme. Les acheteurs sont actifs.',mkt_strong:'Le marché est dynamique. Les acheteurs sont motivés et les biens se vendent.',
+    state_new:'La fenêtre est bien ouverte pour ce bien.',state_maintain:'La fenêtre est encore ouverte — l\'intérêt des acheteurs s\'estompe naturellement avec le temps.',state_prepare:'La fenêtre commence à se réduire. C\'est le bon moment pour préparer une alternative.',state_initiate:'Le point de bascule approche. Un changement de stratégie préparé maintenant produira un meilleur résultat.',state_activate:'Le point de bascule est dépassé. Chaque semaine supplémentaire réduit de façon mesurable le prix que vous obtiendrez.',
+    sc_maintain_tag:'Surveiller — fenêtre encore ouverte',sc_maintain_short:'EN L\'ÉTAT',sc_maintain_signal:'Votre bien a encore une chance réaliste d\'atteindre le prix demandé.',sc_maintain_detail:'La position actuelle est saine. L\'intérêt des acheteurs s\'estompe naturellement avec le temps — identifier le moment exact où le maintien commence à réduire votre résultat, avant de l\'atteindre, est la priorité.',
+    sc_prepare_tag:'Préparer un changement de stratégie',sc_prepare_short:'PRÉPARER',sc_prepare_signal:'La fenêtre commence à se réduire. Certains acheteurs ayant visité le bien passent à autre chose.',sc_prepare_detail:'C\'est le bon moment pour préparer des alternatives. Une vente aux enchères structurée crée l\'urgence et la concurrence qu\'un maintien en vente ne peut pas générer. Attendre plus longtemps rend le changement plus difficile et plus coûteux.',
+    sc_initiate_tag:'Changement de stratégie — à préparer maintenant',sc_initiate_short:'PRÉPARER →',sc_initiate_signal:'Le point de bascule est proche. Préparer le changement maintenant produit un meilleur résultat que d\'attendre de l\'avoir dépassé.',sc_initiate_detail:'Les acheteurs ayant vu ce bien sans faire d\'offre ont peu de chances de revenir sans une nouvelle raison d\'agir. Une vente aux enchères structurée fournit exactement cela — mais la préparation prend 4 à 6 semaines. C\'est maintenant qu\'elle doit commencer.',
+    sc_activate_tag:'Point de bascule dépassé — agir maintenant',sc_activate_short:'AGIR MAINTENANT',sc_activate_signal:'À ce stade, chaque semaine sans action réduit de façon mesurable le prix que vous obtiendrez.',sc_activate_detail:'Les biens dans cette situation obtiennent systématiquement moins que leur prix demandé en vente traditionnelle — non pas parce que le bien a perdu de la valeur, mais parce que le marché a tiré ses propres conclusions du temps passé. Une vente aux enchères structurée remet les compteurs à zéro.',
+    verdict_stretch:'"Un prix significativement au-dessus du marché filtre les acheteurs avant même la visite. Le timing n\'est pas la variable clé ici."',verdict_activate:'"Vous ne négociez plus votre prix demandé. Vous négociez combien vous êtes prêt à en céder."',verdict_initiate:'"Plus cela dure, moins vous avez de contrôle sur le résultat."',verdict_prepare:'"Le temps n\'est plus votre allié."',
+    co_activate_pre:'Le point de bascule est atteint à ',co_activate_mid:' mois sur le marché',co_activate_post:'. Une vente aux enchères structurée devrait maintenant produire un meilleur résultat que le maintien en vente.',
+    co_initiate_mid:' mois',co_initiate_post:' avant le point de bascule estimé (',co_initiate_post2:' mois de mise en vente). Le préparer maintenant maximise le résultat.',
+    co_prepare_pre:'La fenêtre se réduit — environ ',co_prepare_mid:' à ',co_prepare_post:' mois avant le point de bascule.',
+    co_maintain_pre:'Le point de bascule estimé se situe entre ',co_maintain_mid:' et ',co_maintain_post:' mois de mise en vente.',
+    co_rationale_base:' la fenêtre de base est d\'environ ',co_rationale_mois:' mois.',co_rationale_advance:') avancent ce point de ',co_rationale_advance2:' mois.',co_rationale_extend:' Les conditions actuelles prolongent cette fenêtre d\'environ ',co_rationale_extend2:' mois.',co_rationale_end:' Estimation modélisée — le calendrier réel dépend des spécificités du bien.',co_rationale_for:'Pour un bien ',co_rationale_on:' sur un marché ',
+    co_shifts_reduction:'réduction de prix de ',co_shifts_pct:'%',co_shifts_visits:'visites sans offres — résistance au prix confirmée',co_shifts_visits_early:'début de résistance au prix',co_shifts_market:'marché lent',co_shifts_price:'prix au-dessus des comparables',co_shifts_factors:' Les facteurs présents (',
+    alert_stretch:'◈ Le prix est significativement au-dessus des ventes comparables. Le timing n\'est pas la variable prioritaire — un alignement prix est nécessaire avant d\'envisager un changement de mécanisme.',alert_red:'⚠ Chaque semaine de maintien en vente traditionnelle réduit de façon mesurable le prix que vous obtiendrez. Un changement de stratégie est recommandé maintenant.',alert_amber:'◈ La fenêtre se réduit. C\'est le bon moment pour préparer un changement de stratégie avant que le coût de l\'attente ne dépasse ses bénéfices.',
+    m1_high:'La probabilité d\'obtenir votre prix demandé reste favorable.',m1_mid:'La probabilité se dégrade. Les acheteurs commencent à percevoir un manque d\'urgence dans votre vente.',m1_low:'La probabilité d\'obtenir votre prix demandé en vente traditionnelle est maintenant faible. Les acheteurs qui ont vu ce bien s\'attendent à une concession.',
+    m1b_ultra:'Sur le segment ultra-premium, les acheteurs font leur diligence sur de nombreux mois. La probabilité d\'obtenir plein prix décroît rapidement sans pression compétitive.',m1b_trophy:'Sur le segment trophy, les cycles de décision longs rendent le temps sur le marché encore plus pénalisant.',m1b_base:'Basé sur les ventes comparables. Plus un bien reste sans acquéreur, plus les acheteurs supposent qu\'il y a un problème.',
+    m2_divergent_pre:'La probabilité d\'obtenir le prix demandé (',m2_divergent_post:'% est en dessous du seuil typique pour ce stade. Les indicateurs de probabilité confirment une urgence supérieure à ce que le timing seul suggère.',m2_high:'La plupart des acheteurs qui ont vu votre bien sont encore accessibles. Une nouvelle approche peut les ramener.',m2_mid_pre:'Environ ',m2_mid_post:'% des prospects ayant vu le bien peuvent être réengagés. Le reste a continué sa recherche ailleurs.',m2_low_pre:'Moins de ',m2_low_post:'% des acheteurs ayant visité ce bien peuvent être réengagés à ce prix. La grande majorité a tourné la page.',
+    m2b_low:'En dessous de 30%, une simple relance ne suffit pas. Un changement de mécanisme — date fixe, concurrence réelle — est nécessaire pour recréer l\'urgence.',m2b_high:'Au-dessus de 30%, une approche structurée peut encore réengager une partie significative des prospects déjà qualifiés.',
+    m3_stretch_label:'Prix au-dessus du marché — variable prioritaire avant le timing',m3_stretch_bench:'Un prix significativement au-dessus des comparables filtre les acheteurs avant même la visite. Le timing ne devient la variable clé qu\'une fois le prix aligné avec le marché.',m3_stretch_desc_pre:'À ce niveau de prix, le maintien réduit structurellement le vivier d\'acheteurs qui s\'engagent sérieusement. Une enchère sans réserve révélerait la valeur réelle du marché — généralement entre 65% et ',m3_stretch_desc_post:'% du prix demandé actuel. Recommandation : revoir le prix avant d\'envisager un changement de mécanisme.',
+    m3_early_label:'Signal de marché précoce — à surveiller de près',m3_early_bench:'Des visites sans offres en début de commercialisation sont le signal le plus courant de résistance au prix sur le segment luxe.',m3_early_desc_pre:' visite',m3_early_s:'s',m3_early_desc_mid:' sans offre',m3_early_desc_dom:' en ',m3_early_desc_dom2:' jours',m3_early_desc_since:' depuis la mise en vente',m3_early_desc_post:'. Schéma classique de résistance au prix. Le point de bascule théorique est à ',m3_early_desc_end:' jours, mais ce profil y arrive généralement plus tôt.',m3_early_unit:'visites',
+    m3_decay_label:'Coût hebdomadaire du maintien en vente',m3_decay_bench:'La courbe de vente traditionnelle décline dès la mise en vente. À ce stade, l\'érosion hebdomadaire est mesurable.',m3_decay_desc_pre:'Chaque semaine supplémentaire en vente traditionnelle réduit le prix réalisable d\'environ ',m3_decay_desc_mid:'. Sur 60 jours : ',m3_decay_desc_post:' de valeur perdue.',
+    m3_days_label_past:'Point de bascule atteint',m3_days_label:'Jours avant le changement de stratégie recommandé',m3_days_bench:'Au-delà de ce point, le coût de l\'attente dépasse le bénéfice du maintien.',m3_days_desc_past:'Cette fenêtre est fermée. Chaque semaine supplémentaire réduit le prix que vous obtiendrez.',m3_days_desc_pre:'Environ ',m3_days_desc_post:' jours supplémentaires avant que la balance ne bascule.',m3_days_unit:'jours',
+    pc_desc_pre:'À ',pc_desc_mid:' mois sur le marché — enchère structurée : ~',pc_desc_mid2:'% du prix demandé (~',pc_desc_mid3:'M€) · maintien traditionnel : ~',pc_desc_mid4:'% (~',pc_desc_mid5:'M€). Écart estimé : ',pc_desc_post:'. Projections basées sur le prix demandé actuel de €',pc_desc_prof:'M, profil ',pc_desc_seg:', segment ',pc_desc_end:'.',
+    chart_sub_pre:'Indexé au prix demandé · ',chart_sub_mid:' · segment ',chart_sub_post:' · modèle indicatif',chart_now:'VOUS ÊTES ICI',chart_tipping:'POINT DE BASCULE · ',chart_mois:' mois',chart_j0:'J.0',chart_pct:'% DU PRIX DEMANDÉ RÉCUPÉRABLE',
+    date_verified:'Données de marché vérifiées le ',date_none:'Aucune date de vérification renseignée.',
+    g1_real_offers:'· offres réelles',g1_real_visits:'· visites réelles',g1_estimated:'· marché estimé',g2_real:'· chiffre réel',g2_estimated:'· estimé',
+    sg_0_offers_v_pre:'visite',sg_0_offers_s:'s',sg_0_offers_none:'Aucune offre',sg_0_offers_head:' — résistance au prix',sg_0_offers_note:'Les prospects voient le bien mais ne font pas d\'offre. Schéma presque toujours lié au prix. Un processus avec date limite et compétition simultanée change la dynamique.',
+    sg_1_offer_pre:' visite',sg_1_offer_s:'s',sg_1_offer_head:'1 offre — intérêt confirmé, concurrence absente',sg_1_offer_note:'Au moins un acheteur a fait une démarche concrète. Un processus structuré peut placer plusieurs acheteurs en compétition simultanée.',
+    sg_few_head_post:' offres — demande réelle, concurrence à créer',sg_few_note_pre:' acheteurs ont manifesté un intérêt concret. Un processus avec date fixe peut les placer en compétition directe.',sg_many_head_post:' offres — conditions idéales pour une enchère',sg_many_note:'Demande active confirmée. Le vivier est prouvé — il manque uniquement le mécanisme de compétition simultanée.',
+    sg_0_vis_head:'Aucune visite — demande absente à ce prix',sg_0_vis_note:'Aucun prospect ne visite. Signal fort d\'inadéquation prix-marché.',sg_few_vis_post:' — intérêt limité',sg_few_vis_note:'Peu de visites. Les acheteurs ne se déplacent pas — soit visibilité insuffisante, soit prix qui filtre les prospects.',sg_mid_vis_post:' visites sans offre — le bien plaît, le prix bloque',sg_mid_vis_note:'Schéma le plus courant de résistance au prix. Un processus avec date limite peut débloquer la situation.',sg_high_vis_post:' visites — fort intérêt, conversion à déclencher',sg_high_vis_note:'Exposition élevée. Le vivier existe — une enchère peut transformer ce trafic en offres concrètes.',
+    sg_est_high:'Demande active sur ce segment',sg_est_mid:'Demande modérée — vivier restreint',sg_est_low:'Demande faible — vivier très limité',
+    bn_0:'Aucune offre — signal de résistance au prix.',bn_offer:' offre',bn_offers:' offres',bn_received:' reçue',bn_received_pl:' reçues',
+    en_0:'Aucune visite enregistrée.',en_few_post:' — exposition limitée.',en_mod_post:' visites — intérêt modéré.',en_good_post:' visites — bonne exposition.',en_high_post:' visites — forte exposition.',en_visite:' visite',en_visites:' visites',
+    price_cut:'% — les acheteurs l\'ont vu',price_cut_pre:'Prix réduit de ',
+    rl_inline:'',rl_slight:'↑ Prix légèrement au-dessus — impact modéré sur le délai de vente.',rl_stretch:'⚠ Prix significativement au-dessus des comparables — les acheteurs filtrent avant même la visite.',rl_below:'↓ Prix compétitif — accélère la fenêtre et améliore la probabilité.',
+    winbench_fallback:'Les estimations reflètent les schémas d\'absorption typiques pour ce profil de marché.',
+    'explainer-toggle':'Comment ce cadre fonctionne — en 6 étapes',
+    'exp-t1':'On observe l\'historique du bien','exp-d1':'Jours en commercialisation, trajectoire de prix, visites, offres reçues, baisses de prix. Ce sont les signaux que le marché a déjà émis sur ce bien.',
+    'exp-t2':'On contextualise avec le marché actuel','exp-d2':'Taux d\'intérêt, vitesse des transactions, nombre d\'acheteurs actifs, biens concurrents à proximité. Le même bien dans un marché lent et dans un marché actif n\'a pas le même profil de risque.',
+    'exp-t3':'On calcule le Jour J — le point de bascule','exp-d3':'C\'est le jour où le coût de l\'attente dépasse le bénéfice de maintenir le prix. Il est calculé en 4 couches : base structurelle du segment → ajustements selon les signaux réels → plancher de protection → correction de détresse si nécessaire.',
+    'exp-t4':'On compare votre situation au Jour J','exp-d4':'Quatre phases : Maintain (fenêtre ouverte) → Prepare (fenêtre qui se réduit) → Initiate (point de bascule proche) → Activate (point de bascule dépassé). La phase détermine la recommandation.',
+    'exp-t5':'On vérifie les alertes spéciales','exp-d5':'Prix significativement au-dessus du marché ? Beaucoup de visites sans offre ? Marché lent avec baisses répétées ? Ces signaux modifient le message — dans certains cas, le prix est la variable prioritaire avant le timing.',
+    'exp-t6':'Ce que l\'outil ne fait pas','exp-d6':'Il ne positionne pas votre bien par rapport à des données de transactions externes. Il ne produit pas d\'estimation de valeur. Il cartographie la relation entre l\'historique du bien et les conditions actuelles — ce qui le rend indépendant des bases de données de marché.',
+    'exp-calc-title':'Comment le Jour J est calculé — 4 couches',
+    'exp-c1-label':'Base structurelle','exp-c1-text':'Segment du bien × niveau de prix × archétype de marché → durée de base en jours',
+    'exp-c2-label':'Ajustements signaux','exp-c2-text':'Visites sans offres (jusqu\'à −120j) · baisse de prix · conditions de marché · réalisme du prix',
+    'exp-c3-label':'Plancher de protection','exp-c3-text':'Ultra ≥ 540j · Trophy ≥ 480j · Upper ≥ 365j · ajustable si signaux négatifs forts (−35% max)',
+    'exp-c4-label':'Distress override','exp-c4-text':'Trophy/Ultra uniquement : si ≥2 signaux de détresse simultanés, le Jour J est ramené vers dom+45j',
+    arch_perennial_desc:'Demande internationale toute l\'année. Typique : Cannes, Nice, Marbella, Lac Léman, Genève. Délais de vente traditionnels : 12–16 mois pour les biens de prestige au-dessus de 5M€.',
+    arch_seasonal_desc:'Demande concentrée sur 8–10 semaines par an. Typique : Saint-Tropez, Sainte-Maxime, Megève, Val d\'Isère, Courchevel (hors ultra-prime), Verbier. Délais typiques : 16–24 mois.',
+    arch_lifestyle_desc:'Marché résidentiel secondaire avec acheteurs mixtes (régionaux + internationaux). Typique : Antibes, Mougins, Chamonix, arrière-pays varois. Délais typiques : 13–18 mois.',
+    arch_trophy_desc:'Vivier mondial restreint — moins de 20 acheteurs actifs à tout moment. Typique : Cap Ferrat, Courchevel 1850, biens 15M€+, propriétés d\'exception. Délais typiques : 20–30 mois.',
+    'xo-header-left':'Avantage du changement de mécanisme — fenêtre actuelle',
+    'xo-header-right':'Différentiel enchère vs. vente traditionnelle',
+    'p1-label':'Avantage estimé d\'une vente aux enchères structurée',
+    'p2-window':'avantage sur le maintien en vente — estimé pour les 60 prochains jours',
+    'pc_desc_differential':'À {dom} mois sur le marché, l\'avantage de mécanisme d\'une enchère structurée est estimé à {gap} par rapport au maintien en vente traditionnelle. Cette fourchette reflète la dispersion observée sur des profils comparables — elle n\'est pas une garantie. Elle est valide dans la fenêtre actuelle et évolue à mesure que le temps passé augmente. Elle ne représente pas un prix, mais une différence de trajectoire entre deux mécanismes.',
+    'p1-bench':'Mayer (1998) documente un différentiel de 4 à 12 points entre enchère et vente traditionnelle sur les marchés à vivier restreint — dans des conditions de campagne favorables. Ce différentiel est sensible au temps : il reflète l\'avantage de mécanisme dans la fenêtre actuelle, pas une valeur garantie.',
+    'c2-label':'Coût estimé — 60 prochains jours en vente traditionnelle',
+    'c2-desc':'Fourchette de réduction de prix typique observée sur des biens comparables restés en commercialisation standard pendant 60 jours.',
+    'c2-bench':'Correspond à la pente de la courbe bleue sur le graphique — calibrée sur les données renseignées. Ce n\'est pas une garantie, c\'est une estimation de dispersion.',
+  },
+  en: {
+    phase_new:'New listing',phase_maintain:'Good window',phase_prepare:'Window narrowing',phase_initiate:'Growing urgency',phase_activate:'Tipping point passed',
+    risk_low:'Low risk',risk_moderate:'Moderate risk',risk_growing:'Growing risk',risk_high:'High risk',
+    signal_stretch:'Price review needed — before timing',signal_monitor:'Monitor',signal_consider:'Consider acting',signal_time:'Time to act',signal_act:'Act now',
+    mkt_very_slow:'Rising rates, slow market and few buyers mean buyers have no urgency.',mkt_slow:'The market is slowing. Fewer active buyers, longer transaction times.',mkt_slightly_slow:'The market is a little quiet. Fewer buyers than usual.',mkt_normal:'Market conditions are broadly normal for this type of property.',mkt_good:'The market is in good shape. Buyers are active.',mkt_strong:'The market is dynamic. Buyers are motivated and properties are selling.',
+    state_new:'The window is wide open for this property.',state_maintain:'The window is still open — buyer interest fades naturally over time.',state_prepare:'The window is starting to narrow. Now is the right time to prepare an alternative.',state_initiate:'The tipping point is approaching. A strategy change prepared now will produce a better outcome.',state_activate:'The tipping point has been passed. Each additional week measurably reduces the price you will achieve.',
+    sc_maintain_tag:'Monitor — window still open',sc_maintain_short:'HOLD',sc_maintain_signal:'Your property still has a realistic chance of achieving asking price.',sc_maintain_detail:'The current position is sound. Buyer interest fades naturally over time — identifying the exact moment when holding starts to reduce your outcome, before reaching it, is the priority.',
+    sc_prepare_tag:'Prepare a strategy change',sc_prepare_short:'PREPARE',sc_prepare_signal:'The window is starting to narrow. Some buyers who viewed the property are moving on.',sc_prepare_detail:'Now is the right time to prepare alternatives. A structured auction creates the urgency and competition that continued listing cannot generate. Waiting longer makes the change harder and more costly.',
+    sc_initiate_tag:'Strategy change — prepare now',sc_initiate_short:'PREPARE →',sc_initiate_signal:'The tipping point is close. Preparing the change now produces a better outcome than waiting until it has passed.',sc_initiate_detail:'Buyers who viewed this property without making an offer are unlikely to return without a new reason to act. A structured auction provides exactly that — but preparation takes 4 to 6 weeks. It needs to start now.',
+    sc_activate_tag:'Tipping point passed — act now',sc_activate_short:'ACT NOW',sc_activate_signal:'At this stage, each week without action measurably reduces the price you will achieve.',sc_activate_detail:'Properties in this situation consistently achieve less than asking price through traditional sale — not because the property has lost value, but because the market has drawn its own conclusions from the time on market. A structured auction resets the clock.',
+    verdict_stretch:'"A price significantly above the market filters buyers before they even visit. Timing is not the key variable here."',verdict_activate:'"You are no longer negotiating your asking price. You are negotiating how much you are prepared to concede."',verdict_initiate:'"The longer this continues, the less control you have over the outcome."',verdict_prepare:'"Time is no longer on your side."',
+    co_activate_pre:'Tipping point reached at ',co_activate_mid:' months on market',co_activate_post:'. A structured auction should now produce a better outcome than continued listing.',
+    co_initiate_mid:' month(s)',co_initiate_post:' to estimated tipping point (',co_initiate_post2:' months on market). Preparing now maximises the outcome.',
+    co_prepare_pre:'Window narrowing — approximately ',co_prepare_mid:' to ',co_prepare_post:' months to the tipping point.',
+    co_maintain_pre:'Estimated tipping point between ',co_maintain_mid:' and ',co_maintain_post:' months on market.',
+    co_rationale_base:' the base window is approximately ',co_rationale_mois:' months.',co_rationale_advance:') bring this forward by ',co_rationale_advance2:' months.',co_rationale_extend:' Current conditions extend this window by approximately ',co_rationale_extend2:' months.',co_rationale_end:' Modelled estimate — actual timing depends on property-specific factors.',co_rationale_for:'For a ',co_rationale_on:' property on a ',
+    co_shifts_reduction:'price reduction of ',co_shifts_pct:'%',co_shifts_visits:'viewings without offers — confirmed price resistance',co_shifts_visits_early:'early price resistance signal',co_shifts_market:'slow market',co_shifts_price:'price above comparables',co_shifts_factors:' Present factors (',
+    alert_stretch:'◈ The price is significantly above comparable sales. Timing is not the priority variable — price alignment is needed before considering a mechanism change.',alert_red:'⚠ Each week of continued traditional listing measurably reduces the price you will achieve. A strategy change is recommended now.',alert_amber:'◈ The window is narrowing. Now is the right time to prepare a strategy change before the cost of waiting exceeds its benefits.',
+    m1_high:'The probability of achieving asking price remains favourable.',m1_mid:'The probability is deteriorating. Buyers are beginning to perceive a lack of urgency in your sale.',m1_low:'The probability of achieving asking price through traditional sale is now low. Buyers who have seen this property expect a concession.',
+    m1b_ultra:'In the ultra-premium segment, buyers conduct due diligence over many months. The probability of achieving full price declines rapidly without competitive pressure.',m1b_trophy:'In the trophy segment, long decision cycles make time on market even more penalising.',m1b_base:'Based on comparable sales. The longer a property remains unsold, the more buyers assume something is wrong.',
+    m2_divergent_pre:'The probability of achieving asking price (',m2_divergent_post:'% is below the typical threshold for this stage. Probability indicators confirm greater urgency than timing alone suggests.',m2_high:'Most buyers who viewed your property are still reachable. A new approach can bring them back.',m2_mid_pre:'Approximately ',m2_mid_post:'% of prospects who viewed the property can be re-engaged. The rest have moved on.',m2_low_pre:'Fewer than ',m2_low_post:'% of buyers who viewed this property can be re-engaged at this price. The large majority have moved on.',
+    m2b_low:'Below 30%, a simple follow-up is not enough. A mechanism change — fixed date, real competition — is needed to recreate urgency.',m2b_high:'Above 30%, a structured approach can still re-engage a significant portion of already-qualified prospects.',
+    m3_stretch_label:'Price above market — priority variable before timing',m3_stretch_bench:'A price significantly above comparables filters buyers before they even visit. Timing only becomes the key variable once price is aligned with the market.',m3_stretch_desc_pre:'At this price level, continued listing structurally reduces the pool of buyers who engage seriously. An unreserved auction would reveal true market value — typically between 65% and ',m3_stretch_desc_post:'% of the current asking price. Recommendation: review price before considering a mechanism change.',
+    m3_early_label:'Early market signal — monitor closely',m3_early_bench:'Viewings without offers early in the marketing period are the most common signal of price resistance in the luxury segment.',m3_early_desc_pre:' viewing',m3_early_s:'s',m3_early_desc_mid:' without offer',m3_early_desc_dom:' in ',m3_early_desc_dom2:' days',m3_early_desc_since:' since listing',m3_early_desc_post:'. Classic pattern of price resistance. The theoretical tipping point is at ',m3_early_desc_end:' days, but this profile typically reaches it sooner.',m3_early_unit:'viewings',
+    m3_decay_label:'Weekly cost of continued listing',m3_decay_bench:'The traditional sale curve declines from day one. At this stage, weekly erosion is measurable.',m3_decay_desc_pre:'Each additional week of traditional listing reduces the achievable price by approximately ',m3_decay_desc_mid:'. Over 60 days: ',m3_decay_desc_post:' in lost value.',
+    m3_days_label_past:'Tipping point reached',m3_days_label:'Days before recommended strategy change',m3_days_bench:'Beyond this point, the cost of waiting exceeds the benefit of holding.',m3_days_desc_past:'This window is closed. Each additional week reduces the price you will achieve.',m3_days_desc_pre:'Approximately ',m3_days_desc_post:' additional days before the balance tips.',m3_days_unit:'days',
+    pc_desc_pre:'At ',pc_desc_mid:' months on market — structured auction: ~',pc_desc_mid2:'% of asking price (~€',pc_desc_mid3:'M) · traditional listing: ~',pc_desc_mid4:'% (~€',pc_desc_mid5:'M). Estimated gap: ',pc_desc_post:'. Projections based on current asking price of €',pc_desc_prof:'M, profile ',pc_desc_seg:', segment ',pc_desc_end:'.',
+    chart_sub_pre:'Indexed to asking price · ',chart_sub_mid:' · segment ',chart_sub_post:' · indicative model',chart_now:'YOU ARE HERE',chart_tipping:'TIPPING POINT · ',chart_mois:' mo',chart_j0:'D.0',chart_pct:'% OF ASKING PRICE RECOVERABLE',
+    date_verified:'Market data verified on ',date_none:'No verification date entered.',
+    g1_real_offers:'· actual offers',g1_real_visits:'· actual viewings',g1_estimated:'· estimated',g2_real:'· actual figure',g2_estimated:'· estimated',
+    sg_0_offers_v_pre:'viewing',sg_0_offers_s:'s',sg_0_offers_none:'No offers',sg_0_offers_head:' — price resistance',sg_0_offers_note:'Prospects are viewing but not making offers. Almost always price-related. A deadline-driven process with simultaneous competition changes the dynamic.',
+    sg_1_offer_pre:' viewing',sg_1_offer_s:'s',sg_1_offer_head:'1 offer — confirmed interest, no competition',sg_1_offer_note:'At least one buyer has taken concrete action. A structured process can place multiple buyers in simultaneous competition.',
+    sg_few_head_post:' offers — real demand, competition needed',sg_few_note_pre:' buyers have shown concrete interest. A fixed-date process can place them in direct competition.',sg_many_head_post:' offers — ideal conditions for an auction',sg_many_note:'Active demand confirmed. The buyer pool is proven — the only missing element is a simultaneous competition mechanism.',
+    sg_0_vis_head:'No viewings — demand absent at this price',sg_0_vis_note:'No prospects visiting. Strong signal of price-market mismatch.',sg_few_vis_post:' — limited interest',sg_few_vis_note:'Few viewings. Buyers are not visiting — either insufficient visibility or price filtering prospects.',sg_mid_vis_post:' viewings without offer — property appeals, price is the block',sg_mid_vis_note:'Most common pattern of price resistance. A deadline-driven process can unlock this.',sg_high_vis_post:' viewings — strong interest, conversion needed',sg_high_vis_note:'High exposure. The buyer pool exists — an auction can convert this traffic into concrete offers.',
+    sg_est_high:'Active demand in this segment',sg_est_mid:'Moderate demand — restricted pool',sg_est_low:'Weak demand — very limited pool',
+    bn_0:'No offers — price resistance signal.',bn_offer:' offer',bn_offers:' offers',bn_received:' received',bn_received_pl:' received',
+    en_0:'No viewings recorded.',en_few_post:' — limited exposure.',en_mod_post:' viewings — moderate interest.',en_good_post:' viewings — good exposure.',en_high_post:' viewings — strong exposure.',en_visite:' viewing',en_visites:' viewings',
+    price_cut:'% — buyers have seen it',price_cut_pre:'Price reduced by ',
+    rl_inline:'',rl_slight:'↑ Price slightly above market — moderate impact on sale timeline.',rl_stretch:'⚠ Price significantly above comparables — buyers filter before even visiting.',rl_below:'↓ Competitive price — accelerates the window and improves probability.',
+    winbench_fallback:'Estimates reflect typical absorption patterns for this market profile.',
+    'explainer-toggle':'How this framework works — in 6 steps',
+    'exp-t1':'We observe the property\'s history','exp-d1':'Days on market, price trajectory, viewings, offers received, price reductions. These are the signals the market has already sent about this property.',
+    'exp-t2':'We contextualise against current market conditions','exp-d2':'Interest rates, transaction pace, active buyer count, competing properties nearby. The same property in a slow market and an active market carries a different risk profile.',
+    'exp-t3':'We calculate the Tipping Point — Day J','exp-d3':'This is the day when the cost of waiting exceeds the benefit of holding the price. It is calculated in 4 layers: structural base for the segment → adjustments from real signals → luxury protection floor → distress correction if needed.',
+    'exp-t4':'We compare your situation to the Tipping Point','exp-d4':'Four phases: Maintain (window open) → Prepare (window narrowing) → Initiate (tipping point close) → Activate (tipping point passed). The phase determines the recommendation.',
+    'exp-t5':'We check for special alerts','exp-d5':'Price significantly above the market? Many viewings without offers? Slow market with repeated reductions? These signals modify the output — in some cases, price is the priority variable before timing.',
+    'exp-t6':'What the tool does not do','exp-d6':'It does not position your property against external transaction data. It does not produce a value estimate. It maps the relationship between the property\'s history and current conditions — which makes it independent from market databases.',
+    'exp-calc-title':'How the Tipping Point is calculated — 4 layers',
+    'exp-c1-label':'Structural base','exp-c1-text':'Property segment × price level × market archetype → base timeline in days',
+    'exp-c2-label':'Signal adjustments','exp-c2-text':'Viewings without offers (up to −120 days) · price reduction · market conditions · price realism',
+    'exp-c3-label':'Protection floor','exp-c3-text':'Ultra ≥ 540d · Trophy ≥ 480d · Upper ≥ 365d · adjustable under strong negative signals (−35% max)',
+    'exp-c4-label':'Distress override','exp-c4-text':'Trophy/Ultra only: if ≥2 simultaneous distress signals, the Tipping Point is blended toward dom+45d',
+    arch_perennial_desc:'Year-round international demand. Typical: Cannes, Nice, Marbella, Lake Geneva, Geneva. Traditional sale timelines: 12–16 months for prestige properties above €5M.',
+    arch_seasonal_desc:'Demand concentrated over 8–10 weeks per year. Typical: Saint-Tropez, Sainte-Maxime, Megève, Val d\'Isère, Courchevel (excluding ultra-prime), Verbier. Typical timelines: 16–24 months.',
+    arch_lifestyle_desc:'Secondary residential market with mixed buyers (regional + international). Typical: Antibes, Mougins, Chamonix, Var hinterland. Typical timelines: 13–18 months.',
+    arch_trophy_desc:'Restricted global pool — fewer than 20 active buyers at any time. Typical: Cap Ferrat, Courchevel 1850, properties €15M+, exceptional estates. Typical timelines: 20–30 months.',
+    'xo-header-left':'Mechanism advantage — current window',
+    'xo-header-right':'Auction differential vs. traditional listing',
+    'p1-label':'Estimated advantage of a structured auction',
+    'p2-window':'advantage over continued listing — estimated for the next 60 days',
+    'pc_desc_differential':'At {dom} months on market, the mechanism advantage of a structured auction is estimated at {gap} over continued traditional listing. This range reflects observed dispersion on comparable profiles — it is not a guarantee. It is valid in the current window and shifts as time on market increases. It does not represent a price. It represents a difference in trajectory between two sale mechanisms.',
+    'p1-bench':'Mayer (1998) documents a differential of 4 to 12 points between auction and traditional sale in thin markets — under favourable campaign conditions. This differential is time-sensitive: it reflects the mechanism advantage in the current window, not a guaranteed outcome.',
+    'c2-label':'Estimated cost — next 60 days in traditional listing',
+    'c2-desc':'Typical price reduction range observed on comparable properties remaining in standard marketing for 60 days.',
+    'c2-bench':'Corresponds to the slope of the blue curve on the chart — calibrated to the data entered. This is a dispersion estimate, not a guarantee.',
+  }
+};
+function T(key){const l=(typeof currentLang!=='undefined')?currentLang:'fr';return(DYNAMIC_COPY[l]&&DYNAMIC_COPY[l][key]!==undefined)?DYNAMIC_COPY[l][key]:(DYNAMIC_COPY['fr'][key]||key);}
+
+// ══════════════════════════════════════════════════════════════════
+// DECISION ENGINE v6.1 — xoverDay is the single source of truth
+//
+// Architecture: signals (price reduction, visits/offers, market
+// conditions) all feed INTO xoverDay calculation. stateId is
+// derived ONLY from dom vs xoverDay. No parallel score system.
+//
+// stateId thresholds:
+//   maintain = dom < xoverDay × 0.60
+//   prepare  = dom < xoverDay × 0.85
+//   initiate = dom < xoverDay × 1.00
+//   activate = dom ≥ xoverDay
+//
+// This guarantees: remaining, post-crossover visibility, and
+// recommendation are always logically consistent with each other.
+// ══════════════════════════════════════════════════════════════════
+function computeState() {
+
+  // ── 1. RAW INPUTS ────────────────────────────────────────────────
+  const dom   = Math.max(0, parseInt(document.getElementById('f-dom')?.value)||0);
+  const price = parseFloat(document.getElementById('f-price')?.value)||6.9;
+  const segKey= document.getElementById('f-seg')?.value||'villa-sea';
+  const arch  = getArchetype();
+  const seg   = getSeg(segKey);
+  const realism = getPriceRealism();
+  const reductionPct = getReductionPct();
+
+  const visitsRaw = document.getElementById('c-enquiries-real')?.value;
+  const offersRaw = document.getElementById('c-buyers-pool')?.value;
+  const hasVisits = visitsRaw!==''&&visitsRaw!==null&&!isNaN(parseInt(visitsRaw));
+  const hasOffers = offersRaw!==''&&offersRaw!==null&&!isNaN(parseInt(offersRaw));
+  const visits = hasVisits ? Math.max(0,parseInt(visitsRaw)) : null;
+  const offers = hasOffers ? Math.max(0,parseInt(offersRaw)) : null;
+
+  const rates    = parseInt(document.getElementById('m-rates')?.value)||0;
+  const velocity = parseInt(document.getElementById('m-velocity')?.value)||0;
+  const demand   = parseInt(document.getElementById('m-demand')?.value)||0;
+  const mktTotal = rates + velocity + demand;
+
+  const compData  = getComparables(price);
+  const compScore = compData ? compData.score : 0;
+  const tier = priceTier(price);
+  const f    = pp(price);
+
+  // ── 2. VISIT/OFFER SIGNAL → xoverDay shift ───────────────────────
+  // Visits without offers = price resistance signal.
+  // Expressed directly as days subtracted from xoverDay.
+  let visitSignalDays = 0;
+  if (visits!==null||offers!==null) {
+    const v=visits!==null?visits:0, o=offers!==null?offers:0;
+    if (o===0&&v>0) visitSignalDays = v<=2?-30:v<=5?-60:v<=10?-90:-120;
+    else if (o>0&&v>0&&(o/v)<0.15) visitSignalDays = -30;
+  }
+
+  // ── 3. CONDITIONS ADJUSTMENTS → xoverDay shift ───────────────────
+  const adj = getConditionsAdj();
+
+  // ── 4. XOVERDAY — single authoritative calculation ───────────────
+  // Base: segment × price tier × archetype
+  // Shifts: market/property conditions + realism + visit signal
+  // Floor: luxury segments have structural minimum decision cycles
+  // ── SMART LUXURY FLOOR ──────────────────────────────────────────
+  // The floor protects against unrealistically short crossover times
+  // on illiquid segments. However, when multiple strong negative signals
+  // are present simultaneously (price cut ≥10% + visits without offers +
+  // slow market), the floor yields proportionally — the market has already
+  // spoken, and holding an artificial floor creates false reassurance.
+  const luxuryFloorHard = tier.id==='ultra'?540:tier.id==='trophy'?480:tier.id==='upper'?365:120;
+
+  // Compute floor relief: how much can negative signals erode the floor?
+  // Each confirmed signal contributes. Max relief = 35% of the hard floor.
+  let floorRelief = 0;
+  if (reductionPct >= 0.15) floorRelief += 0.14;        // large price cut: confirmed stale
+  else if (reductionPct >= 0.10) floorRelief += 0.09;   // meaningful cut
+  else if (reductionPct >= 0.05) floorRelief += 0.04;
+  if (visitSignalDays <= -90) floorRelief += 0.12;      // 10+ visits, zero offers: clear signal
+  else if (visitSignalDays <= -60) floorRelief += 0.07; // 5–10 visits, zero offers
+  else if (visitSignalDays <= -30) floorRelief += 0.03;
+  if (mktTotal <= -3) floorRelief += 0.09;              // clearly slow market
+  else if (mktTotal <= -2) floorRelief += 0.05;
+  floorRelief = Math.min(0.35, floorRelief);            // cap at 35%
+
+  const luxuryFloor = Math.round(luxuryFloorHard * (1 - floorRelief));
+
+  const baseXover   = Math.round(seg.xover * px(price) * arch.xoverMult);
+  const xoverRaw    = Math.max(
+    luxuryFloor,
+    baseXover + adj.xoverShift + realism.xoverShift + visitSignalDays
+  );
+
+  // ── DISTRESS OVERRIDE ────────────────────────────────────────────
+  // On trophy/ultra segments the structural floor can mask a listing
+  // the market has already rejected. When ≥2 confirmed distress
+  // signals co-occur, we blend xoverDay toward dom+45 so stateId
+  // reflects reality rather than the model floor.
+  // score=2 → 33% blend; score=3 → 67% blend; score≥4 → fully capped.
+  // Only fires on trophy/ultra with dom>0.
+  let xoverDay = xoverRaw;
+  if ((tier.id === 'trophy' || tier.id === 'ultra') && dom > 0) {
+    let ds = 0;
+    if (dom > 300)                                              ds++;
+    if (dom > 500)                                              ds++; // very long DOM counts double
+    if (visitSignalDays <= -90 || (visits === 0 && dom > 180)) ds++;
+    if (realism.level >= 1)                                     ds++;
+    if (mktTotal <= -2)                                         ds++;
+    if (reductionPct >= 0.08)                                   ds++;
+    if (ds >= 2) {
+      const capTarget = dom + 45;
+      const blend = Math.min(1, (ds - 1) / 3); // 2→33% 3→67% 4+→100%
+      xoverDay = Math.round(xoverRaw * (1 - blend) + capTarget * blend);
+    }
+  }
+
+  // ── 5. STATEIDENTIFIER — derived purely from dom vs xoverDay ─────
+  // No score, no parallel system. One number decides everything.
+  const ratio = dom / xoverDay;
+  const stateId = dom===0 ? 'maintain'
+    : ratio < 0.60 ? 'maintain'
+    : ratio < 0.85 ? 'prepare'
+    : ratio < 1.00 ? 'initiate'
+    : 'activate';
+
+  const remaining = Math.max(0, xoverDay - dom);
+  const showNewListing = dom === 0;
+
+  // ── 6. PROB & RE-ENGAGE (informational, but now amplify messaging when divergent) ─
+  const reductionPenalty = reductionPct>=0.15?-12:reductionPct>=0.10?-8:reductionPct>=0.05?-4:reductionPct>0?-2:0;
+  const adjBase   = Math.max(20, Math.min(96, seg.base + adj.baseShift + reductionPenalty));
+  const decayRate = 0.0033 * (1+seg.fr*0.45) * Math.max(0.5, Math.min(1.5, adj.decayMult));
+  const prob      = Math.max(12, Math.min(96, Math.round(adjBase * f * Math.exp(-decayRate*dom)) + realism.probPenalty));
+  const reEngBase = Math.max(5, Math.min(88, Math.round(82 * Math.exp(-0.012*(1+seg.fr*0.45)*adj.decayMult*dom))));
+  const reEngage  = Math.max(5, reEngBase + realism.reEngagePenalty);
+  const decayMult = adj.decayMult;
+
+  // Divergence flag: prob/reEngage are significantly worse than stateId suggests.
+  // Used to amplify card2 text and tighten the verdict when the model says
+  // "window reducing" but the probability indicators say "already in trouble".
+  // Does not change stateId — it remains xoverDay-driven.
+  const probDivergent = (stateId === 'prepare' && prob < 42) ||
+                        (stateId === 'maintain' && prob < 35);
+
+  // ── 7. CHART PARAMETERS — v7 crossover logic + 50% hard floor ────
+  const HARD_FLOOR     = 50;
+  const chartTradStart = reductionPct>=0.15?86:reductionPct>=0.10?89:reductionPct>=0.05?92:reductionPct>0?94:97;
+  const chartTotal     = Math.min(Math.max(xoverDay * 2.2, dom + 300, 400), xoverDay * 3);
+  const chartLocFloor  = Math.round(66+(arch.liquidity-0.60)/(0.88-0.60)*12);
+  const chartTradFloor = Math.max(HARD_FLOOR, chartLocFloor - Math.round((decayMult-1)*8));
+  const chartTradDecay = (chartTradStart - HARD_FLOOR) / (chartTotal * 0.80);
+  const chartTradAtX   = Math.max(HARD_FLOOR, chartTradStart - chartTradDecay * xoverDay);
+  const chartAuctStart = chartTradStart - 3;
+  const chartAuctPreDecay  = xoverDay > 0 ? (chartAuctStart - chartTradAtX) / xoverDay : 0;
+  const chartAuctPostDecay = chartTradDecay * 0.25;
+
+  const chartTradVal = (d) => Math.max(HARD_FLOOR, chartTradStart - chartTradDecay * d);
+  const chartAuctVal = (d) => {
+    const raw = d <= xoverDay ? chartAuctStart - chartAuctPreDecay * d : chartTradAtX - chartAuctPostDecay * (d - xoverDay);
+    return Math.max(HARD_FLOOR, Math.min(99, raw));
+  };
+
+  // ── 8. FINANCIAL METRICS ─────────────────────────────────────────
+  // 60-day cost — fixed window, mirrors the blue curve slope over 60 days
+  const lossLo = Math.round(price * chartTradDecay / 100 * 60 * 0.8 * 10) / 10;
+  const lossHi = Math.round(price * chartTradDecay / 100 * 60 * 1.4 * 10) / 10;
+
+  const weeklyDecayPct = chartTradDecay*7;
+  const weeklyDecayM   = Math.round(price*weeklyDecayPct/100*10)/10;
+  const weeklyDecayK   = Math.round(price*weeklyDecayPct/100*1000);
+  const weeklyStr      = weeklyDecayM>=0.1?'~'+weeklyDecayM.toFixed(1)+'M€':'~'+weeklyDecayK+'K€';
+  const sixtyStr       = weeklyDecayM>=0.1?'~'+Math.round(weeklyDecayM*60/7*10)/10+'M€':'~'+Math.round(weeklyDecayK*60/7)+'K€';
+
+  // ── 9. DISPLAY LABELS ────────────────────────────────────────────
+  const phaseLabel = showNewListing?{t:T('phase_new'),c:'#C9A84C'}
+    :stateId==='maintain'?{t:T('phase_maintain'),c:'#6EC89A'}
+    :stateId==='prepare'?{t:T('phase_prepare'),c:'#E8A44A'}
+    :stateId==='initiate'?{t:T('phase_initiate'),c:'#F07070'}
+    :{t:T('phase_activate'),c:'#F07070'};
+
+  const riskLabel = prob>=75&&reEngage>55?{t:T('risk_low'),c:'#6EC89A'}
+    :prob>=60&&reEngage>35?{t:T('risk_moderate'),c:'#E8A44A'}
+    :prob>=45&&reEngage>20?{t:T('risk_growing'),c:'#F07070'}
+    :{t:T('risk_high'),c:'#F07070'};
+
+  const _stretchActive = realism.tag === 'stretch';
+  const signalLabel = _stretchActive ? {t:T('signal_stretch'),c:'#B8720A'}
+    : showNewListing||stateId==='maintain'?{t:T('signal_monitor'),c:'rgba(10,10,10,0.4)'}
+    :stateId==='prepare'?{t:T('signal_consider'),c:'#B8720A'}
+    :stateId==='initiate'?{t:T('signal_time'),c:'#C0392B'}
+    :{t:T('signal_act'),c:'#C0392B'};
+
+  // ── 10. CARD 3 MODE ──────────────────────────────────────────────
+  // Derivation priority: stretch → decayCost (post-xover) → earlySignal → daysRemaining
+  // Coherence rules enforced after derivation:
+  //   - decayCost is only valid on activate (shows weekly loss makes sense)
+  //   - daysRemaining is only valid on maintain/prepare/initiate
+  //   These two invariants prevent the card from saying "you're losing X/week"
+  //   while the strategy block says "window still open".
+  const hasEarlySignal = visitSignalDays<=-60&&dom<90;
+  let card3Mode = realism.tag==='stretch' ? 'stretch'
+    : stateId==='activate'                ? 'decayCost'
+    : hasEarlySignal                      ? 'earlySignal'
+    :                                       'daysRemaining';
+
+  // Enforce coherence invariants
+  if (card3Mode === 'decayCost' && stateId !== 'activate') card3Mode = 'daysRemaining';
+  if (card3Mode === 'daysRemaining' && stateId === 'activate') card3Mode = 'decayCost';
+
+  // ── 11. CONTEXT SENTENCES ────────────────────────────────────────
+  const mktSentence = mktTotal<=-4?T('mkt_very_slow')
+    :mktTotal<=-2?T('mkt_slow')
+    :mktTotal===-1?T('mkt_slightly_slow')
+    :mktTotal===0?T('mkt_normal')
+    :mktTotal<=2?T('mkt_good')
+    :T('mkt_strong');
+
+  const stateSentence = showNewListing?T('state_new')
+    :stateId==='maintain'?T('state_maintain')
+    :stateId==='prepare'?T('state_prepare')
+    :stateId==='initiate'?T('state_initiate')
+    :T('state_activate');
+
+  // ── 12. CALLOUT ──────────────────────────────────────────────────
+  const xoverLo  = Math.round(xoverDay*0.85);
+  const xoverHi  = Math.round(xoverDay*1.15);
+  const baseMois = Math.round(baseXover/30.4);
+  const condShift = xoverDay - baseXover;
+  const condMois  = Math.round(Math.abs(condShift)/30.4);
+
+  // Rationale: explain what moved xoverDay from its baseline
+  let rationaleWhy = T('co_rationale_for')+tier.band.toLowerCase()+T('co_rationale_on')+arch.label+T('co_rationale_base')+baseMois+T('co_rationale_mois');
+  const shifts=[];
+  if (reductionPct>=0.10) shifts.push(T('co_shifts_reduction')+Math.round(reductionPct*100)+T('co_shifts_pct'));
+  else if (reductionPct>0) shifts.push(T('co_shifts_reduction')+Math.round(reductionPct*100)+T('co_shifts_pct'));
+  if (visitSignalDays<=-60) shifts.push(T('co_shifts_visits'));
+  else if (visitSignalDays<=-30) shifts.push(T('co_shifts_visits_early'));
+  if (mktTotal<=-2) shifts.push(T('co_shifts_market'));
+  if (realism.xoverShift<-10) shifts.push(T('co_shifts_price'));
+  if (condShift<-10) rationaleWhy+=T('co_shifts_factors')+shifts.join(', ')+T('co_rationale_advance')+condMois+T('co_rationale_advance2');
+  else if (condShift>10) rationaleWhy+=T('co_rationale_extend')+condMois+T('co_rationale_extend2');
+  rationaleWhy += T('co_rationale_end');
+
+  const calloutHtml = stateId==='activate'
+    ?T('co_activate_pre')+'<strong>'+Math.round(dom/30.4)+T('co_activate_mid')+'</strong>'+T('co_activate_post')+'<br><span style="font-size:11px;color:var(--muted);margin-top:8px;display:block;">'+rationaleWhy+'</span>'
+    :stateId==='initiate'
+    ?'<strong>'+Math.round(remaining/30.4)+T('co_initiate_mid')+'</strong>'+T('co_initiate_post')+Math.round(xoverLo/30.4)+'–'+Math.round(xoverHi/30.4)+T('co_initiate_post2')+'<br><span style="font-size:11px;color:var(--muted);margin-top:8px;display:block;">'+rationaleWhy+'</span>'
+    :stateId==='prepare'
+    ?T('co_prepare_pre')+'<strong>'+Math.round(Math.max(0,xoverLo-dom)/30.4)+T('co_prepare_mid')+Math.round(Math.max(0,xoverHi-dom)/30.4)+T('co_prepare_post')+'</strong><br><span style="font-size:11px;color:var(--muted);margin-top:8px;display:block;">'+rationaleWhy+'</span>'
+    :T('co_maintain_pre')+'<strong>'+Math.round(xoverLo/30.4)+T('co_maintain_mid')+Math.round(xoverHi/30.4)+T('co_maintain_post')+'</strong><br><span style="font-size:11px;color:var(--muted);margin-top:8px;display:block;">'+rationaleWhy+'</span>';
+
+  // ── 13. ALERT & VERDICT ──────────────────────────────────────────
+  const alertLevel = _stretchActive ? 'amber'
+    : (stateId==='initiate'||stateId==='activate')?'red':stateId==='prepare'?'amber':'none';
+  const verdictText = _stretchActive
+    ? T('verdict_stretch')
+    : stateId==='activate'?T('verdict_activate')
+    :stateId==='initiate'?T('verdict_initiate')
+    :stateId==='prepare'?T('verdict_prepare'):null;
+  const showVerdict = !!verdictText&&dom>0;
+
+  // ── 14. STATES COPY ──────────────────────────────────────────────
+  const STATES_COPY = {
+    maintain:{ tag:T('sc_maintain_tag'), color:'#6EC89A', short:T('sc_maintain_short'),
+      signal:T('sc_maintain_signal'), detail:T('sc_maintain_detail'), spec:1 },
+    prepare:{ tag:T('sc_prepare_tag'), color:'#E8A44A', short:T('sc_prepare_short'),
+      signal:T('sc_prepare_signal'), detail:T('sc_prepare_detail'), spec:2 },
+    initiate:{ tag:T('sc_initiate_tag'), color:'#C0392B', short:T('sc_initiate_short'),
+      signal:T('sc_initiate_signal'), detail:T('sc_initiate_detail'), spec:3 },
+    activate:{ tag:T('sc_activate_tag'), color:'#C0392B', short:T('sc_activate_short'),
+      signal:T('sc_activate_signal'), detail:T('sc_activate_detail'), spec:4 }
+  };
+  const stateCopy = STATES_COPY[stateId];
+
+  return {
+    dom, price, seg, arch, realism, tier, reductionPct,
+    visits, offers, hasVisits, hasOffers, visitSignalDays,
+    mktTotal, compData,
+    xoverDay, remaining, baseXover, condShift, xoverLo, xoverHi,
+    prob, reEngage, decayMult, lossLo, lossHi, probDivergent,
+    stateId, stateCopy,
+    chartTradVal, chartAuctVal, chartTradDecay,
+    phaseLabel, riskLabel, signalLabel,
+    weeklyDecayM, weeklyDecayK, weeklyStr, sixtyStr,
+    card3Mode, hasEarlySignal,
+    mktSentence, stateSentence,
+    calloutHtml, alertLevel, verdictText, showVerdict, showNewListing
+  };
+}
+
+function toggleExplainer() {
+  const body=document.getElementById('explainer-body'), icon=document.getElementById('explainer-icon');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none'; icon.textContent=open?'−':'+';
+}
+
+function toggleMethod() {
+  const body=document.getElementById('method-body'), icon=document.getElementById('method-icon');
+  const open=body.style.display==='none';
+  body.style.display=open?'grid':'none'; icon.textContent=open?'−':'+';
+}
+
+function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+function setHtml(id,v){ const e=document.getElementById(id); if(e) e.innerHTML=v; }
+function setColor(id,t,c){ const e=document.getElementById(id); if(e){e.textContent=t;e.style.color=c;} }
+
+// ── AGENT BRANDING ───────────────────────────────────────────────
+function toggleAgentPanel() {
+  const body=document.getElementById('agent-panel-body'), icon=document.getElementById('agent-panel-icon');
+  const open=body.style.display==='none';
+  body.style.display=open?'grid':'none'; icon.textContent=open?'−':'+';
+}
+
+function handleLogoUpload(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){ const dataUrl=ev.target.result; localStorage.setItem('pa_agent_logo',dataUrl); applyAgentLogo(dataUrl); };
+  reader.readAsDataURL(file);
+}
+
+function applyAgentLogo(dataUrl) {
+  const img=document.getElementById('agent-logo-img'), ph=document.getElementById('agent-logo-placeholder');
+  if(img&&dataUrl){img.src=dataUrl;img.style.display='block';if(ph)ph.style.display='none';}
+  const hdrLogo=document.getElementById('hdr-agent-logo');
+  if(hdrLogo&&dataUrl){hdrLogo.src=dataUrl;hdrLogo.style.display='block';}
+  const pcLogo=document.getElementById('pc-agent-logo'), pcDiv=document.getElementById('pc-divider');
+  if(pcLogo&&dataUrl){pcLogo.src=dataUrl;pcLogo.style.display='block';if(pcDiv)pcDiv.style.display='block';}
+}
+
+function updateAgentBrand() {
+  const name=(document.getElementById('a-name').value||'').trim();
+  const agency=(document.getElementById('a-agency').value||'').trim();
+  const contact=(document.getElementById('a-contact').value||'').trim();
+  localStorage.setItem('pa_agent_name',name);
+  localStorage.setItem('pa_agent_agency',agency);
+  localStorage.setItem('pa_agent_contact',contact);
+  const brandEl=document.getElementById('hdr-agent-brand'), nameDisp=document.getElementById('hdr-agent-name-display');
+  const display=agency||name;
+  if(display){brandEl.classList.add('visible');nameDisp.textContent=display;}else{brandEl.classList.remove('visible');}
+  const pcAgent=document.getElementById('pc-agent'), pcContact=document.getElementById('pc-contact');
+  const pcDisc=document.getElementById('pc-agent-name-disc'), pcSub=document.getElementById('pc-subtitle');
+  const agentDisplay=[name,agency].filter(Boolean).join(' · ');
+  if(pcAgent) pcAgent.textContent=agentDisplay||'PrimeAuctions';
+  if(pcContact) pcContact.textContent=contact||'—';
+  if(pcDisc) pcDisc.textContent=agentDisplay?agentDisplay+' in partnership with PrimeAuctions':'PrimeAuctions';
+  if(pcSub&&agency) pcSub.textContent=agency+' × PrimeAuctions · Confidentiel · À titre de discussion uniquement';
+}
+
+function restoreAgentBrand() {
+  const name=localStorage.getItem('pa_agent_name')||'';
+  const agency=localStorage.getItem('pa_agent_agency')||'';
+  const contact=localStorage.getItem('pa_agent_contact')||'';
+  const logo=localStorage.getItem('pa_agent_logo')||'';
+  if(name)    document.getElementById('a-name').value=name;
+  if(agency)  document.getElementById('a-agency').value=agency;
+  if(contact) document.getElementById('a-contact').value=contact;
+  if(logo)    applyAgentLogo(logo);
+  if(name||agency||contact||logo){document.getElementById('agent-panel-body').style.display='grid';document.getElementById('agent-panel-icon').textContent='−';updateAgentBrand();}
+}
+
+function generatePDF() { window.print(); }
+
+// ── MAIN RENDER ───────────────────────────────────────────────────
+function runAnalysis() {
+  try {
+    const S = computeState();
+    const name = (document.getElementById('f-name')?.value||'').trim()||'—';
+
+    // Status bar
+    setText('sb-prop',   name);
+    setText('sb-price',  '€'+S.price.toFixed(1)+'M');
+    setText('sb-dom',    S.dom+' j');
+    setColor('sb-phase', S.phaseLabel.t, S.phaseLabel.c);
+    setColor('sb-risk',  S.riskLabel.t,  S.riskLabel.c);
+    setColor('sb-signal',S.signalLabel.t,S.signalLabel.c);
+
+    // Context bar
+    setText('context-text', S.mktSentence + ' ' + S.stateSentence);
+
+    // Strategy block
+    const sc = S.stateCopy;
+    const dot = document.getElementById('strat-dot');
+    if(dot) dot.style.background=sc.color;
+    setText('strat-label',  sc.short);
+    setText('strat-tag',    sc.tag);
+    setText('strat-signal', sc.signal);
+    setText('strat-detail', sc.detail);
+
+    // Verdict
+    const vl=document.getElementById('verdict-line');
+    if(vl) vl.style.display=S.showVerdict?'block':'none';
+    if(S.showVerdict) setText('verdict-text',S.verdictText);
+
+    // ── BAND 1: 60-day cost — visible initiate/activate, not stretch ──
+    const showCostBand = (S.stateId==='initiate'||S.stateId==='activate') && S.card3Mode!=='stretch';
+    const costBand = document.getElementById('cost-band');
+    if(costBand) costBand.style.display = showCostBand ? 'block' : 'none';
+    if(showCostBand){
+      setText('loss-range', fmtLossRange(S.lossLo, S.lossHi));
+      const lossNote = document.getElementById('loss-note');
+      if(lossNote) lossNote.textContent = currentLang==='en'
+        ? fmtLossNote(S.lossLo,S.lossHi)+' of estimated value lost over the next 60 days in traditional listing — calibrated to the data entered.'
+        : fmtLossNote(S.lossLo,S.lossHi)+' de valeur estimée perdue sur les 60 prochains jours en vente traditionnelle — calibré sur les données renseignées.';
+      const lbl = document.getElementById('cost-band-label-el');
+      if(lbl) lbl.textContent = currentLang==='en'
+        ? 'Estimated cost — next 60 days in traditional listing'
+        : 'Coût estimé — 60 prochains jours en vente traditionnelle';
+    }
+
+    // POST-CROSSOVER METRICS
+    // Visible only when dom >= xoverDay (stateId==='activate') AND not stretch mode.
+    // With new xoverDay-driven model, stateId==='activate' is the exact and only condition.
+    const postRow=document.getElementById('post-crossover-metrics'), postHeader=document.getElementById('post-crossover-header');
+    const postVisible = S.stateId==='activate' && S.card3Mode!=='stretch';
+    if(postRow)    postRow.style.display=postVisible?'block':'none';
+    if(postHeader) postHeader.style.display=postVisible?'block':'none';
+    if(postVisible){
+      const auctPct   = Math.round(S.chartAuctVal(S.dom)*10)/10;
+      const tradPct   = Math.round(S.chartTradVal(S.dom)*10)/10;
+      const auctionGap= Math.round((auctPct-tradPct)*10)/10;
+      const gapLo     = Math.max(1, Math.round(auctionGap - 5));
+      const gapHi     = Math.round(auctionGap + 5);
+      const rangeStr  = '+'+gapLo+'% – +'+gapHi+'%';
+
+      setText('p1', rangeStr);
+      // Update p2-label dynamically so it respects current language
+      const p2label = document.getElementById('p2-label');
+      if(p2label) p2label.textContent = T('p2-window');
+      setText('p1-desc', T('pc_desc_differential').replace('{gap}', rangeStr).replace('{dom}', Math.round(S.dom/30.4)));
+      setText('p1-bench', T('p1-bench'));
+    }
+
+    // ── FOOTER SOURCE ──
+    setHtml('foot-src', S.arch.footSrc);
+
+    // ── CHART ──
+    setText('chart-sub',T('chart_sub_pre')+S.arch.label+T('chart_sub_mid')+S.tier.band+' ('+S.tier.label+')'+T('chart_sub_post'));
+    requestAnimationFrame(()=>drawChart(S.dom,S.xoverDay,S.arch,S.decayMult));
+
+    // ── DATE ──
+    const checkedDate=document.getElementById('m-checked-date')?.value;
+    const chartDateNote=document.getElementById('chart-date-note');
+    if(chartDateNote) chartDateNote.textContent=checkedDate?T('date_verified')+new Date(checkedDate).toLocaleDateString(currentLang==='en'?'en-GB':'fr-FR',{day:'numeric',month:'long',year:'numeric'})+'.':T('date_none');
+    document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+    // ── PRINT COVER ──
+    const pcProp=document.getElementById('pc-property'), pcPri=document.getElementById('pc-price'), pcDt=document.getElementById('pc-date');
+    if(pcProp) pcProp.textContent=name;
+    if(pcPri)  pcPri.textContent='€'+S.price.toFixed(1)+'M';
+    if(pcDt)   pcDt.textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+    // ── REALISM NOTE ──
+    const realismNote=document.getElementById('c-realism-note');
+    if(realismNote){
+      if(S.realism.label){realismNote.style.display='block';realismNote.textContent=S.realism.label;realismNote.style.color=S.realism.colour;}
+      else realismNote.style.display='none';
+    }
+
+    // ── COMPARABLES NOTE ──
+    const compNote=document.getElementById('m-comparables-note');
+    if(compNote&&S.compData){compNote.style.display='block';compNote.textContent=S.compData.note.split('.')[0]+'.'; }
+    else if(compNote) compNote.style.display='none';
+
+    // ── PRICE CUT NOTE ──
+    const priceNote=document.getElementById('c-price-note');
+    if(priceNote){
+      if(S.reductionPct>0){priceNote.style.display='block';priceNote.textContent=T('price_cut_pre')+Math.round(S.reductionPct*100)+T('price_cut');}
+      else priceNote.style.display='none';
+    }
+
+    // ── ENQUIRIES NOTE ──
+    const enqNote=document.getElementById('c-enquiries-note');
+    if(enqNote){
+      if(S.visits!==null){
+        enqNote.style.display='block';
+        enqNote.textContent=S.visits===0?T('en_0'):S.visits<=2?S.visits+(S.visits>1?T('en_visites'):T('en_visite'))+T('en_few_post'):S.visits<=5?S.visits+T('en_mod_post'):S.visits<=10?S.visits+T('en_good_post'):S.visits+T('en_high_post');
+      } else enqNote.style.display='none';
+    }
+
+  } catch(e) {
+    console.error('Analysis error:',e);
+    let errDiv=document.getElementById('debug-error');
+    if(!errDiv){errDiv=document.createElement('div');errDiv.id='debug-error';errDiv.style.cssText='position:fixed;bottom:0;left:0;right:0;background:red;color:white;padding:10px;font-size:12px;z-index:9999;word-break:break-all;';document.body.appendChild(errDiv);}
+    errDiv.textContent='ERROR: '+e.message+' | '+(e.stack||'').split('\n')[1];
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  restoreAgentBrand();
+  const dateInput=document.getElementById('m-checked-date');
+  if(dateInput&&!dateInput.value) dateInput.value=new Date().toISOString().split('T')[0];
+  updateArchetypeBadge();
+  setTimeout(runAnalysis,100);
+  setLang('fr');
+});
+// ── I18N — STATIC HTML TOGGLE ────────────────────────────────────
+const I18N = {
+  fr: {
+    'hdr-framework': 'Cadre d\'analyse stratégique',
+    'pc-title': 'Cadre d\'analyse stratégique de vente',
+    'pc-subtitle-text': 'Confidentiel · À titre de discussion uniquement',
+    'pc-key-property': 'Bien',
+    'pc-key-price': 'Prix demandé',
+    'pc-key-preparedby': 'Préparé par',
+    'pc-key-contact': 'Contact',
+    'pc-disclaimer': 'Préparé par PrimeAuctions à l\'aide du Cadre d\'analyse stratégique de vente PrimeAuctions — un outil d\'aide à la décision propriétaire développé par Primextate SA, Suisse. Ce document est strictement confidentiel. Il ne constitue pas une évaluation, une offre, un conseil en investissement ni une garantie de résultat. Toutes les projections sont fondées sur un modèle de comportement de marché et des recherches académiques publiées. Primextate SA n\'accepte aucune responsabilité pour les décisions prises sur la base de ce document. Ce document est régi par le droit suisse.',
+    'agent-panel-title': 'Coordonnées de l\'agent',
+    'agent-panel-sub': '— personnalisez ce document pour votre client',
+    'agent-name-label': 'Votre nom',
+    'agent-agency-label': 'Nom de l\'agence',
+    'agent-contact-label': 'Email ou téléphone',
+    'agent-logo-label': 'Logo de l\'agence',
+    'agent-logo-placeholder': 'Cliquer pour télécharger',
+    'f-name-label': 'Votre bien',
+    'f-price-label': 'Prix demandé (€M)',
+    'f-orig-label': 'Prix initial (€M)',
+    'f-orig-hint': 'si réduit',
+    'f-orig-error': 'Doit être supérieur au prix demandé',
+    'f-dom-label': 'Jours en vente',
+    'f-archetype-label': 'Profil de marché',
+    'arch-perennial': 'International Perennial',
+    'arch-seasonal': 'Seasonal Resort',
+    'arch-lifestyle': 'Lifestyle / Secondary',
+    'arch-trophy': 'Trophy / Exception',
+    'f-seg-label': 'Type de bien',
+    'seg-villa-sea': 'Villa avec vue mer / lac',
+    'seg-villa-inland': 'Villa — sans vue',
+    'seg-chateau': 'Château ou domaine',
+    'seg-apartment': 'Appartement prestige',
+    'seg-penthouse': 'Penthouse',
+    'seg-chalet': 'Chalet',
+    'c-realism-label': 'Comment le prix demandé se situe-t-il par rapport aux ventes récentes à proximité ?',
+    'c-realism-0': 'En ligne avec les ventes comparables',
+    'c-realism-1': 'Légèrement au-dessus — 5 à 15% de plus',
+    'c-realism-2': 'Significativement au-dessus — plus de 15%',
+    'c-realism-m1': 'En dessous du marché — prix compétitif',
+    'cond-label-property': 'Votre bien',
+    'c-condition-label': 'État du bien',
+    'c-cond-1': 'Excellent — prêt à habiter',
+    'c-cond-0': 'Bon état général',
+    'c-cond-m1': 'Quelques travaux nécessaires',
+    'c-cond-m2': 'Rénovation complète nécessaire',
+    'c-enquiries-label': 'Visites — depuis la mise en vente',
+    'c-real-figure': '· votre chiffre',
+    'c-buyers-label': 'Offres reçues — depuis la mise en vente',
+    'c-real-figure2': '· votre chiffre',
+    'c-price-label': 'Le prix a-t-il évolué ?',
+    'c-price-1': 'Non — toujours à ce prix',
+    'c-price-0': 'C\'est le prix initial',
+    'c-price-m1': 'Oui — réduit une fois',
+    'c-price-m2': 'Oui — réduit plusieurs fois',
+    'c-agent-label': 'Activité commerciale sur le bien',
+    'c-agent-1': 'Très actif — visites régulières',
+    'c-agent-0': 'Niveau standard',
+    'c-agent-m1': 'Limité — peu de visites',
+    'cond-label-market': 'Le marché en ce moment',
+    'm-comparables-label': 'Biens comparables à proximité',
+    'm-check-portal': '— vérifier sur portail',
+    'm-date-label': 'Données vérifiées le',
+    'm-date-hint': '· apparaît sur le document',
+    'm-rates-label': 'Taux d\'intérêt',
+    'm-rates-2': 'En baisse — acheteurs plus confiants',
+    'm-rates-0': 'Stables',
+    'm-rates-m2': 'En hausse — acheteurs plus prudents',
+    'm-velocity-label': 'Vitesse des transactions',
+    'm-vel-2': 'Rapide — biens vendus rapidement',
+    'm-vel-0': 'Rythme normal',
+    'm-vel-m2': 'Lent — ventes qui traînent',
+    'm-demand-label': 'Nombre d\'acheteurs actifs',
+    'm-dem-1': 'Fort — plus d\'acheteurs que de biens',
+    'm-dem-0': 'Modéré',
+    'm-dem-m1': 'Faible — peu d\'acheteurs',
+    'context-initial': 'Renseignez les informations du bien pour générer l\'analyse de situation.',
+    'sb-prop-key': 'Bien',
+    'sb-price-key': 'Prix demandé',
+    'sb-dom-key': 'Jours en vente',
+    'sb-phase-key': 'Phase',
+    'sb-risk-key': 'Risque',
+    'sb-signal-key': 'Notre recommandation',
+    'sec-recommendation': 'Notre recommandation',
+    'sec-cost': 'Deux trajectoires',
+    'chart-title': 'Vente traditionnelle vs. enchère structurée — évolution du résultat dans le temps',
+    'leg-traditional': 'Vente traditionnelle',
+    'leg-auction': 'Vente aux enchères structurée',
+    'chart-note': 'Sur les marchés peu liquides ou saisonniers, le délai de vente traditionnel peut dépasser largement un an. La zone ombrée indique où les deux courbes ont atteint leur plancher naturel.',
+    'chart-method-label': 'Note méthodologique',
+    'chart-method-text': 'Ce graphique reflète le comportement typique du marché pour ce profil de bien, calibré sur des recherches publiées. C\'est un cadre d\'aide à la décision, non une prévision.',
+    'xo-initial': 'Renseignez les informations de votre bien pour voir le point de bascule correspondant à votre situation.',
+    'loss-label': 'Coût estimé du maintien en vente traditionnelle — 2 prochains mois',
+    'loss-sub': 'Réduction de prix typique observée sur des biens comparables restés en commercialisation standard',
+    'sec-situation': 'L\'état des lieux',
+    'm1-label': 'Probabilité d\'obtenir votre prix demandé',
+    'm1-desc': 'Sur la base du temps passé sur le marché et des conditions actuelles.',
+    'm1-bench': 'Basé sur les ventes comparables de ce marché. Plus un bien reste sans acquéreur, plus les acheteurs supposent qu\'il y a un problème — même quand ce n\'est pas le cas.',
+    'm2-label': 'Acheteurs susceptibles d\'être réengagés',
+    'm2-desc': 'Part estimée des acheteurs ayant consulté ce bien qui pourraient encore être réengagés.',
+    'm2-bench': 'En dessous de 30%, les acheteurs qui ont vu votre bien sont passés à autre chose. Une nouvelle approche — pas seulement une baisse de prix — est généralement la seule façon de les ramener.',
+    'm3-label': 'Jours avant de changer de stratégie',
+    'm3-unit': 'jours',
+    'm3-desc': 'Délai estimé avant la fermeture de la fenêtre d\'opportunité.',
+    'm3-bench': 'Au-delà de ce point, le coût de l\'attente dépasse le bénéfice de maintenir le prix.',
+    'sec-market': 'Conditions de marché',
+    'g1-label': 'Signal de demande sur ce bien',
+    'g1-estimated': '· estimé',
+    'g2-label': 'Biens concurrents sur le marché',
+    'g2-unit': 'annonces à proximité',
+    'g2-few': 'Peu',
+    'g2-normal': 'Normal',
+    'g2-many': 'Beaucoup',
+    'method-toggle-label': 'Comment ce cadre est construit — et ses limites',
+    'method-h1': 'Quand il est le plus utile',
+    'method-t1': 'Cet outil est conçu pour couvrir l\'ensemble des délais de vente réalistes — y compris les marchés peu liquides et les conditions lentes. Le point de bascule et l\'horizon du graphique s\'ajustent automatiquement en fonction du profil de marché, du niveau de prix et des conditions renseignées.',
+    'method-h2': 'Les 4 profils de marché',
+    'method-t2': '<strong>International Perennial :</strong> Demande toute l\'année, acheteurs internationaux (ex. Cannes, Marbella, Lac Léman). Croisement typique : 12–16 mois. <strong>Seasonal Resort :</strong> Pic de 8–10 semaines, fenêtre effective courte (ex. Saint-Tropez, Megève, Val d\'Isère). 16–24 mois. <strong>Lifestyle / Secondary :</strong> Demande mixte, acheteurs régionaux et internationaux (ex. Antibes, Chamonix, Mougins). 13–18 mois. <strong>Trophy / Exception :</strong> Vivier mondial restreint, processus entièrement off-market. 20–30 mois.',
+    'method-h3': 'Ses limites',
+    'method-t3': 'Dans les premières semaines, les chiffres reflètent le comportement typique du marché pour ce profil plutôt que votre situation spécifique. À l\'autre extrême, si un bien est sur le marché depuis très longtemps, les signaux ont déjà joué et les résultats changent peu avec des données d\'entrée différentes.',
+    'method-h4': 'Ce que ce n\'est pas',
+    'method-t4': 'Ce n\'est pas une évaluation immobilière et ce n\'est pas une garantie de résultat. Cet outil ne positionne pas votre bien par rapport à des données de marché externes. Il cartographie la relation entre l\'historique du bien — temps en commercialisation, trajectoire de prix, signaux d\'engagement acheteur — et les conditions du marché au moment de l\'analyse. C\'est ce qui le rend indépendant de toute base de données de transactions.',
+    'method-h5': 'Quand une enchère n\'est pas la bonne réponse',
+    'method-t5': 'Une vente aux enchères ne garantit pas une prime. Sur des marchés très étroits, une enchère peut exposer l\'absence de demande plutôt que créer de la concurrence. Les conditions dans lesquelles une enchère surperforme — vivier suffisant, campagne internationale solide, réserve crédible, vendeur motivé — font partie de ce que PrimeAuctions évalue avant d\'accepter un mandat.',
+    'method-h6': 'Sur les recherches citées',
+    'method-t6': 'Anglin, Rutherford & Springer (2003) sur les effets du temps passé sur le marché ; Mayer (1998) sur les primes aux enchères — résultats mitigés selon les conditions ; Knight, Sirmans & Turnbull (1994) sur la signalisation par le prix. Ce cadre n\'affirme pas que les enchères surperforment toujours — il identifie le point où les coûts du maintien passif dépassent vraisemblablement ceux d\'un processus structuré.',
+    'method-h7': 'Avertissement juridique',
+    'method-t7': 'Ce document a été produit à l\'aide du Cadre d\'analyse stratégique de vente PrimeAuctions, un outil d\'aide à la décision propriétaire de Primextate SA, société incorporée en Suisse. Il est strictement confidentiel. Il ne constitue pas une évaluation immobilière, une expertise, une offre d\'achat ou de vente, un conseil en investissement, un conseil juridique ou financier. Cet outil mesure le risque de timing et l\'avantage de mécanisme — il n\'évalue pas la valeur du bien. Toutes les projections sont de nature probabiliste. Primextate SA n\'accepte aucune responsabilité pour les décisions prises sur la base de ce document. Ce document est régi par le droit suisse. Tout litige est soumis à la compétence exclusive des tribunaux de Genève, Suisse.<br><br>PrimeAuctions est une marque de Primextate SA · Inscrite en Suisse · primextate.com',
+    'conf-badge': 'Strictement Confidentiel',
+    'footer-mark': 'Cadre d\'analyse stratégique de vente',
+    'pdf-btn': 'Enregistrer en PDF / Imprimer',
+  },
+  en: {
+    'hdr-framework': 'Sale Strategy Framework',
+    'pc-title': 'Sale Strategy Assessment Framework',
+    'pc-subtitle-text': 'Confidential · For Discussion Purposes Only',
+    'pc-key-property': 'Property',
+    'pc-key-price': 'Asking Price',
+    'pc-key-preparedby': 'Prepared by',
+    'pc-key-contact': 'Contact',
+    'pc-disclaimer': 'Prepared by PrimeAuctions using the PrimeAuctions Sale Strategy Framework — a proprietary decision-support tool developed by Primextate SA, Switzerland. This document is strictly confidential. It does not constitute a valuation, offer, investment advice or guarantee of outcome. All projections are based on a market behaviour model and published academic research. Primextate SA accepts no liability for decisions made on the basis of this document. This document is governed by Swiss law.',
+    'agent-panel-title': 'Agent Details',
+    'agent-panel-sub': '— personalise this document for your client',
+    'agent-name-label': 'Your name',
+    'agent-agency-label': 'Agency name',
+    'agent-contact-label': 'Email or phone',
+    'agent-logo-label': 'Agency logo',
+    'agent-logo-placeholder': 'Click to upload',
+    'f-name-label': 'Your property',
+    'f-price-label': 'Asking price (€M)',
+    'f-orig-label': 'Original price (€M)',
+    'f-orig-hint': 'if reduced',
+    'f-orig-error': 'Must be higher than asking price',
+    'f-dom-label': 'Days on market',
+    'f-archetype-label': 'Market profile',
+    'arch-perennial': 'International Perennial',
+    'arch-seasonal': 'Seasonal Resort',
+    'arch-lifestyle': 'Lifestyle / Secondary',
+    'arch-trophy': 'Trophy / Exception',
+    'f-seg-label': 'Property type',
+    'seg-villa-sea': 'Villa — sea / lake view',
+    'seg-villa-inland': 'Villa — no view',
+    'seg-chateau': 'Château or estate',
+    'seg-apartment': 'Prestige apartment',
+    'seg-penthouse': 'Penthouse',
+    'seg-chalet': 'Chalet',
+    'c-realism-label': 'How does the asking price compare to recent nearby sales?',
+    'c-realism-0': 'In line with comparable sales',
+    'c-realism-1': 'Slightly above — 5 to 15% more',
+    'c-realism-2': 'Significantly above — more than 15%',
+    'c-realism-m1': 'Below market — competitive price',
+    'cond-label-property': 'Your property',
+    'c-condition-label': 'Property condition',
+    'c-cond-1': 'Excellent — move-in ready',
+    'c-cond-0': 'Good general condition',
+    'c-cond-m1': 'Some works needed',
+    'c-cond-m2': 'Full renovation required',
+    'c-enquiries-label': 'Viewings — since listing',
+    'c-real-figure': '· your figure',
+    'c-buyers-label': 'Offers received — since listing',
+    'c-real-figure2': '· your figure',
+    'c-price-label': 'Has the price changed?',
+    'c-price-1': 'No — still at this price',
+    'c-price-0': 'This is the original price',
+    'c-price-m1': 'Yes — reduced once',
+    'c-price-m2': 'Yes — reduced multiple times',
+    'c-agent-label': 'Commercial activity on the property',
+    'c-agent-1': 'Very active — regular viewings',
+    'c-agent-0': 'Standard level',
+    'c-agent-m1': 'Limited — few viewings',
+    'cond-label-market': 'The market right now',
+    'm-comparables-label': 'Comparable properties nearby',
+    'm-check-portal': '— check on portal',
+    'm-date-label': 'Data verified on',
+    'm-date-hint': '· appears on document',
+    'm-rates-label': 'Interest rates',
+    'm-rates-2': 'Falling — buyers more confident',
+    'm-rates-0': 'Stable',
+    'm-rates-m2': 'Rising — buyers more cautious',
+    'm-velocity-label': 'Transaction pace',
+    'm-vel-2': 'Fast — properties selling quickly',
+    'm-vel-0': 'Normal pace',
+    'm-vel-m2': 'Slow — sales dragging',
+    'm-demand-label': 'Active buyer count',
+    'm-dem-1': 'Strong — more buyers than stock',
+    'm-dem-0': 'Moderate',
+    'm-dem-m1': 'Weak — few buyers',
+    'context-initial': 'Enter property details to generate the situation analysis.',
+    'sb-prop-key': 'Property',
+    'sb-price-key': 'Asking price',
+    'sb-dom-key': 'Days on market',
+    'sb-phase-key': 'Phase',
+    'sb-risk-key': 'Risk',
+    'sb-signal-key': 'Our recommendation',
+    'sec-recommendation': 'Our Recommendation',
+    'sec-cost': 'Two Trajectories',
+    'chart-title': 'Traditional listing vs. structured auction — outcome over time',
+    'leg-traditional': 'Traditional sale',
+    'leg-auction': 'Structured auction',
+    'chart-note': 'On illiquid or seasonal markets, traditional sale timelines can exceed a year significantly. The shaded zone shows where both curves have reached their natural floor.',
+    'chart-method-label': 'Methodological note',
+    'chart-method-text': 'This chart reflects typical market behaviour for this property profile, calibrated on published research. It is a decision-support framework, not a forecast.',
+    'xo-initial': 'Enter your property details to see the tipping point for your situation.',
+    'loss-label': 'Estimated cost of staying in traditional sale — next 2 months',
+    'loss-sub': 'Typical price reduction observed on comparable properties remaining in standard marketing',
+    'sec-situation': 'Situation Assessment',
+    'm1-label': 'Likelihood of achieving asking price',
+    'm1-desc': 'Based on time on market and current conditions.',
+    'm1-bench': 'Based on comparable sales in this market. The longer a property remains unsold, the more buyers assume something is wrong — even when it isn\'t.',
+    'm2-label': 'Buyers who could still be re-engaged',
+    'm2-desc': 'Estimated share of buyers who viewed this property who could still be re-engaged.',
+    'm2-bench': 'Below 30%, buyers who saw your property have moved on. A new approach — not just a price cut — is generally the only way to bring them back.',
+    'm3-label': 'Days before a strategy change is needed',
+    'm3-unit': 'days',
+    'm3-desc': 'Estimated time before the opportunity window closes.',
+    'm3-bench': 'Beyond this point, the cost of waiting exceeds the benefit of holding the price.',
+    'sec-market': 'Market Conditions',
+    'g1-label': 'Demand signal for this property',
+    'g1-estimated': '· estimated',
+    'g2-label': 'Competing properties on the market',
+    'g2-unit': 'listings nearby',
+    'g2-few': 'Few',
+    'g2-normal': 'Normal',
+    'g2-many': 'Many',
+    'method-toggle-label': 'How this framework is built — and its limits',
+    'method-h1': 'When it is most useful',
+    'method-t1': 'This tool is designed to cover the full range of realistic sale timelines — including illiquid markets and slow conditions. The tipping point and chart horizon adjust automatically based on market profile, price level and the conditions entered.',
+    'method-h2': 'The 4 market profiles',
+    'method-t2': '<strong>International Perennial:</strong> Year-round demand, international buyers (e.g. Cannes, Marbella, Lake Geneva). Typical crossover: 12–16 months. <strong>Seasonal Resort:</strong> 8–10 week peak, short effective window (e.g. Saint-Tropez, Megève, Val d\'Isère). 16–24 months. <strong>Lifestyle / Secondary:</strong> Mixed demand, regional and international buyers (e.g. Antibes, Chamonix, Mougins). 13–18 months. <strong>Trophy / Exception:</strong> Restricted global pool, fully off-market process. 20–30 months.',
+    'method-h3': 'Its limits',
+    'method-t3': 'In the first weeks, figures reflect typical market behaviour for this profile rather than your specific situation. At the other extreme, if a property has been on the market for a long time, the signals have already played out and results change little with different inputs.',
+    'method-h4': 'What it is not',
+    'method-t4': 'It is not a property valuation and it is not a guarantee of outcome. This tool does not position your property against external market data. It maps the relationship between the property\'s history — time on market, price trajectory, buyer engagement signals — and current market conditions at the time of analysis. That is what makes it independent from transaction databases.',
+    'method-h5': 'When an auction is not the right answer',
+    'method-t5': 'An auction does not guarantee a premium. On very thin markets, an auction can expose the absence of demand rather than create competition. The conditions under which an auction outperforms — sufficient buyer pool, strong international campaign, credible reserve, motivated seller — are part of what PrimeAuctions assesses before accepting a mandate.',
+    'method-h6': 'On the cited research',
+    'method-t6': 'Anglin, Rutherford & Springer (2003) on time-on-market effects; Mayer (1998) on auction premiums — mixed results depending on conditions; Knight, Sirmans & Turnbull (1994) on price signalling. This framework does not claim that auctions always outperform — it identifies the point where the costs of passive holding likely exceed those of a structured process.',
+    'method-h7': 'Legal disclaimer',
+    'method-t7': 'This document was produced using the PrimeAuctions Sale Strategy Framework, a proprietary decision-support tool of Primextate SA, incorporated in Switzerland. It is strictly confidential. It does not constitute a property valuation, real estate appraisal, offer to buy or sell, investment advice, legal or financial advice. This tool measures timing risk and mechanism advantage — it does not assess asset value. All projections are probabilistic in nature. Primextate SA accepts no liability for decisions made on the basis of this document. This document is governed by Swiss law. Any dispute is subject to the exclusive jurisdiction of the courts of Geneva, Switzerland.<br><br>PrimeAuctions is a trademark of Primextate SA · Registered in Switzerland · primextate.com',
+    'conf-badge': 'Strictly Confidential',
+    'footer-mark': 'Sale Strategy Framework',
+    'pdf-btn': 'Save as PDF / Print',
+  }
+};
+
+let currentLang = 'fr';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = I18N[lang];
+  document.getElementById('lang-fr').classList.toggle('active', lang==='fr');
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      if (el.innerHTML.indexOf('<') !== -1 && t[key].indexOf('<') !== -1) {
+        el.innerHTML = t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+  document.querySelectorAll('option[data-i18n]').forEach(opt => {
+    const key = opt.getAttribute('data-i18n');
+    if (t[key] !== undefined) opt.textContent = t[key];
+  });
+  // Apply explainer section translations (managed by T(), updated here by ID)
+  const explainerKeys = [
+    'explainer-toggle-label','exp-t1','exp-d1','exp-t2','exp-d2',
+    'exp-t3','exp-d3','exp-t4','exp-d4','exp-t5','exp-d5','exp-t6','exp-d6',
+    'exp-calc-title','exp-c1-label','exp-c1-text','exp-c2-label','exp-c2-text',
+    'exp-c3-label','exp-c3-text','exp-c4-label','exp-c4-text'
+  ];
+  explainerKeys.forEach(id => {
+    const el = document.getElementById(id);
+    const key = id === 'explainer-toggle-label' ? 'explainer-toggle' : id;
+    if (el && T(key) !== key) el.innerHTML = T(key);
+  });
+  // Update dynamic elements that runAnalysis() will refresh on next interaction
+  const dynIds = {'p2-label':'p2-window','xo-header-left-el':'xo-header-left','xo-header-right-el':'xo-header-right'};
+  const p2 = document.getElementById('p2-label'); if(p2) p2.textContent = T('p2-window');
+  const p1lbl = document.getElementById('p1-label-el'); if(p1lbl) p1lbl.textContent = T('p1-label');
+  const xoL = document.getElementById('xo-header-left-el'); if(xoL) xoL.textContent = T('xo-header-left');
+  const xoR = document.getElementById('xo-header-right-el'); if(xoR) xoR.textContent = T('xo-header-right');
+  if (typeof runAnalysis === 'function') runAnalysis();
+}
+
+window.addEventListener('resize',()=>{
+  const S=computeState();
+  drawChart(S.dom,S.xoverDay,S.arch,S.decayMult);
+});
+</script>
+</body>
+</html>
